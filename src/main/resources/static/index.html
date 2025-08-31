@@ -1,7 +1,9 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web3 Guardian: Eliminate the Robots</title>
+    <title>BILLIONS: Eliminate the Robots</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -12,7 +14,10 @@
         }
 
         body {
+            background-image: url("./img/background.png");
+            /*
             background: linear-gradient(135deg, #0c2461, #1e3799);
+            */
             color: #fff;
             min-height: 100vh;
             display: flex;
@@ -48,7 +53,7 @@
             flex: 1;
             width: 100%;
             max-width: 800px;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 95%);
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -361,11 +366,11 @@
 <body>
 <div class="main-wrapper">
     <div class="character-image">
-        <img src="img/Gy7sYuBboAQhJSa.png" alt="像素风格人物">
+        <img src="./img/Javi.png" alt="Web3 Guardian Character">
     </div>
 
     <div class="container">
-        <h1>Web3 Guardian</h1>
+        <h1>BILLIONS</h1>
         <p class="subtitle">Eliminate the Robots, Protect Privacy Data!</p>
 
         <div class="stats">
@@ -416,6 +421,11 @@
                 <div class="ability-name">Repair</div>
                 <div class="ability-cooldown"></div>
             </div>
+            <div class="ability" id="chain-ability">
+                <i class="fas fa-link"></i>
+                <div class="ability-name">Chain Attack</div>
+                <div class="ability-cooldown"></div>
+            </div>
         </div>
 
         <div class="game-container">
@@ -444,6 +454,10 @@
                         <i class="fas fa-fist-raised"></i>
                         <p>+20% Damage</p>
                     </div>
+                    <div class="upgrade-option" data-upgrade="jump">
+                        <i class="fas fa-arrow-up"></i>
+                        <p>+15% Jump</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -461,8 +475,11 @@
                 <li>Jump on robots to eliminate them and earn points</li>
                 <li>Collect blue power-ups for special abilities</li>
                 <li>Collect yellow coins and green data fragments</li>
-                <li>Use <kbd>1</kbd> for Data Blast and <kbd>2</kbd> for Repair abilities</li>
-                <li>Avoid touching robots or you'll lose lives</li>
+                <li>Use <kbd>1</kbd> for Data Blast, <kbd>2</kbd> for Repair, and <kbd>3</kbd> for Chain Attack</li>
+                <li>Press <kbd>F</kbd> for basic attack (no cooldown)</li>
+                <li>Press <kbd>Q</kbd> to switch attack direction</li>
+                <li>Collect blue robots for special bonuses</li>
+                <li>Avoid touching red robots or you'll lose lives</li>
             </ul>
         </div>
 
@@ -485,11 +502,17 @@
     setCanvasSize();
 
     // Load game images
-    const robotImage = new Image();
-    robotImage.src = 'https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/a4d0878beb28462abf858452c1291ad1.png~tplv-a9rns2rl98-24:720:720.png?rk3s=1fb89129&x-expires=1757081514&x-signature=tQ%2FfNs1%2Fg%2FFTWi0asPwavopW2Oo%3D';
+    const playerImage = new Image();
+    playerImage.src = './img/Javi.png'; // Red character from the original code
+
+    const enemyRobotImage = new Image();
+    enemyRobotImage.src = 'https://img.icons8.com/ios-filled/100/fa314a/robot-2.png'; // Red enemy robot
 
     const bossImage = new Image();
-    bossImage.src = 'https://img.icons8.com/ios-filled/100/fa314a/robot-2.png';
+    bossImage.src = 'https://img.icons8.com/ios-filled/100/ff6b6b/robot-3.png'; // Boss robot
+
+    const blueRobotImage = new Image();
+    blueRobotImage.src = './img/BillionsTap.png' ; // Blue robot from the original code
 
     // Game state
     const gameState = {
@@ -501,7 +524,9 @@
         gravity: 0.5,
         gameOver: false,
         bossActive: false,
-        playerDamage: 1
+        playerDamage: 1,
+        jumpPower: 12,
+        playerDirection: 1 // 1 for right, -1 for left
     };
 
     // Player character
@@ -523,6 +548,32 @@
     // Platforms array
     const platforms = [];
     function createPlatforms() {
+
+
+        platforms.length = 0;
+        platforms.push(
+            // 主平台
+            { x: 0, y: canvas.height - 40, width: canvas.width, height: 40, color: '#2c3e50' },
+
+            // 更多平台
+            { x: 100, y: canvas.height - 120, width: 100, height: 20, color: '#3498db' },
+            { x: 300, y: canvas.height - 160, width: 100, height: 20, color: '#3498db' },
+            { x: 500, y: canvas.height - 200, width: 100, height: 20, color: '#3498db' },
+            { x: 700, y: canvas.height - 240, width: 100, height: 20, color: '#3498db' },
+            { x: 200, y: canvas.height - 280, width: 100, height: 20, color: '#3498db' },
+            { x: 400, y: canvas.height - 320, width: 100, height: 20, color: '#3498db' },
+            { x: 600, y: canvas.height - 360, width: 100, height: 20, color: '#3498db' },
+
+            // 移动平台
+            { x: 600, y: canvas.height - 180, width: 80, height: 15, color: '#9b59b6', moving: true, direction: 1, speed: 1, minX: 550, maxX: 700 },
+            { x: 200, y: canvas.height - 220, width: 80, height: 15, color: '#9b59b6', moving: true, direction: 1, speed: 1.5, minX: 150, maxX: 300 },
+
+            // 弹跳平台
+            { x: 400, y: canvas.height - 100, width: 80, height: 15, color: '#e74c3c', bounce: true, bouncePower: 15 }
+        );
+        /*
+
+
         platforms.length = 0;
         platforms.push(
             // Main bottom platform
@@ -535,12 +586,15 @@
             { x: 400, y: canvas.height - 280, width: 100, height: 20, color: '#3498db' },
             // Moving platforms
             { x: 600, y: canvas.height - 180, width: 80, height: 15, color: '#9b59b6', moving: true, direction: 1, speed: 1, minX: 550, maxX: 700 }
-        );
+        );*/
     }
     createPlatforms();
 
     // Robots array
     const robots = [];
+
+    // Blue robots array (friendly)
+    const blueRobots = [];
 
     // Boss object
     let boss = null;
@@ -565,8 +619,12 @@
     // Ability cooldowns
     const abilityCooldowns = {
         blast: 0,
-        heal: 0
+        heal: 0,
+        chain: 0
     };
+
+    // Basic attack cooldown
+    let basicAttackCooldown = 0;
 
     // Keyboard control
     const keys = {};
@@ -586,13 +644,17 @@
         // Update ability cooldowns
         updateAbilityCooldown('blast', abilityCooldowns.blast);
         updateAbilityCooldown('heal', abilityCooldowns.heal);
+        updateAbilityCooldown('chain', abilityCooldowns.chain);
     }
 
     // Update ability cooldown display
     function updateAbilityCooldown(ability, cooldown) {
         const element = document.getElementById(`${ability}-ability`);
         const cooldownBar = element.querySelector('.ability-cooldown');
-        const maxCooldown = ability === 'blast' ? 120 : 180;
+        let maxCooldown = 120;
+
+        if (ability === 'heal') maxCooldown = 180;
+        if (ability === 'chain') maxCooldown = 240;
 
         if (cooldown > 0) {
             element.classList.add('disabled');
@@ -651,6 +713,14 @@
                     player.grounded = true;
                 }
             }
+            if (platform.bounce &&
+                player.x < platform.x + platform.width &&
+                player.x + player.width > platform.x &&
+                player.y < platform.y + platform.height &&
+                player.y + player.height > platform.y &&
+                player.velY > 0) {
+                player.velY = -platform.bouncePower;
+            }
 
             // Draw platform
             ctx.fillStyle = platform.color;
@@ -663,6 +733,9 @@
         // Update and draw robots
         updateRobots();
 
+        // Update and draw blue robots
+        updateBlueRobots();
+
         // Update and draw boss
         updateBoss();
 
@@ -673,16 +746,35 @@
         updateProjectiles();
 
         // Draw player
-        ctx.fillStyle = activePowers.shield ? '#00cec9' : player.color;
-        ctx.fillRect(player.x, player.y, player.width, player.height);
+        if (playerImage.complete) {
+            // Flip image based on direction
+            ctx.save();
+            if (gameState.playerDirection === -1) {
+                ctx.scale(-1, 1);
+                ctx.drawImage(playerImage, -player.x - player.width, player.y, player.width, player.height);
+            } else {
+                ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
+            }
+            ctx.restore();
+        } else {
+            // Fallback to rectangle
+            ctx.fillStyle = activePowers.shield ? '#00cec9' : player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
 
-        // Draw player eyes
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(player.x + 10, player.y + 10, 5, 5);
-        ctx.fillRect(player.x + 25, player.y + 10, 5, 5);
+            // Draw player eyes
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(player.x + 10, player.y + 10, 5, 5);
+            ctx.fillRect(player.x + 25, player.y + 10, 5, 5);
+        }
 
         // Draw health bar
         drawHealthBar();
+
+        // Draw direction indicator
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px Arial';
+        ctx.fillText(`Direction: ${gameState.playerDirection === 1 ? 'Right' : 'Left'}`, 10, 20);
+        ctx.fillText('Press Q to switch', 10, 35);
 
         // Update UI
         updateUI();
@@ -691,7 +783,7 @@
         updateAbilityCooldowns();
 
         // Check level completion condition
-        if (robots.length === 0 && (!gameState.bossActive || boss.health <= 0)) {
+        if (robots.length === 0 && blueRobots.length === 0 && (!gameState.bossActive || boss.health <= 0)) {
             if (gameState.bossActive) {
                 gameState.score += 100; // Bonus for defeating boss
                 gameState.bossActive = false;
@@ -772,7 +864,9 @@
             ) {
                 dataFragments.splice(i, 1);
                 gameState.score += 15;
-                // Data fragments might give special abilities in the future
+
+                // Data fragments give coins
+                gameState.coins += 2;
             }
         }
     }
@@ -781,7 +875,14 @@
     function updateRobots() {
         for (let i = 0; i < robots.length; i++) {
             const robot = robots[i];
-
+// 在机器人更新循环中，确保血量检查逻辑正确
+            if (robot.health <= 0) {
+                robots.splice(i, 1);
+                gameState.score += 10;
+                spawnCollectible(robot.x, robot.y, 'coin');
+                i--; // 调整索引
+                continue; // 跳过当前循环的剩余部分
+            }
             // Move robot based on type
             if (robot.type === 'normal') {
                 robot.x += robot.speed * robot.direction;
@@ -836,6 +937,7 @@
                         enemy: true
                     });
                 }
+
             }
 
             // Detect if player jumps on robot
@@ -885,9 +987,9 @@
             }
 
             // Draw robot using image
-            if (robotImage.complete) {
+            if (enemyRobotImage.complete) {
                 ctx.drawImage(
-                    robotImage,
+                    enemyRobotImage,
                     robot.x,
                     robot.y,
                     robot.width,
@@ -913,6 +1015,71 @@
         }
     }
 
+    // Update blue robots (friendly)
+    function updateBlueRobots() {
+        for (let i = 0; i < blueRobots.length; i++) {
+            const blueRobot = blueRobots[i];
+
+            // Move blue robot slowly
+            blueRobot.x += blueRobot.speed * blueRobot.direction;
+
+            // Change direction when blue robot hits boundary
+            if (blueRobot.x <= 0 || blueRobot.x >= canvas.width - blueRobot.width) {
+                blueRobot.direction *= -1;
+            }
+
+            // Detect if player collects blue robot
+            if (
+                player.x < blueRobot.x + blueRobot.width &&
+                player.x + player.width > blueRobot.x &&
+                player.y < blueRobot.y + blueRobot.height &&
+                player.y + player.height > blueRobot.y
+            ) {
+                blueRobots.splice(i, 1);
+                i--;
+
+                // Blue robot gives special bonus
+                gameState.score += 25;
+                gameState.coins += 5;
+
+                // Random power-up
+                const powerTypes = ['shield', 'zk', 'speed'];
+                const randomPower = powerTypes[Math.floor(Math.random() * powerTypes.length)];
+                activePowers[randomPower] = true;
+
+                // Power lasts for 10 seconds
+                setTimeout(() => {
+                    activePowers[randomPower] = false;
+                    updateUI();
+                }, 10000);
+
+                continue;
+            }
+
+            // Draw blue robot using image
+            if (blueRobotImage.complete) {
+                // Apply blue tint to the robot
+                /*ctx.save();
+                ctx.filter = 'hue-rotate(180deg) saturate(2)';*/
+                ctx.drawImage(
+                    blueRobotImage,
+                    blueRobot.x,
+                    blueRobot.y,
+                    blueRobot.width,
+                    blueRobot.height
+                );
+                ctx.restore();
+            } else {
+                // Fallback to rectangle if image not loaded
+                ctx.fillStyle = '#3498db';
+                ctx.fillRect(blueRobot.x, blueRobot.y, blueRobot.width, blueRobot.height);
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(blueRobot.x + 5, blueRobot.y + 5, 5, 5);
+                ctx.fillRect(blueRobot.x + 20, blueRobot.y + 5, 5, 5);
+            }
+        }
+    }
+
     // Update boss
     function updateBoss() {
         if (!gameState.bossActive || !boss) return;
@@ -925,8 +1092,8 @@
             boss.direction *= -1;
         }
 
-        // Boss attacks
-        if (Math.random() < 0.03) {
+        // Boss attacks - less frequent for easier gameplay
+        if (Math.random() < 0.02) {
             // Shoot projectiles
             projectiles.push({
                 x: boss.x + boss.width/2,
@@ -939,8 +1106,8 @@
             });
         }
 
-        if (Math.random() < 0.01) {
-            // Jump attack
+        if (Math.random() < 0.008) {
+            // Jump attack - less frequent
             boss.velY = -12;
         }
 
@@ -972,6 +1139,11 @@
                 for (let i = 0; i < 5; i++) {
                     spawnCollectible(boss.x + Math.random() * boss.width, boss.y + Math.random() * boss.height, 'coin');
                 }
+
+                // Also spawn data fragments
+                for (let i = 0; i < 3; i++) {
+                    spawnCollectible(boss.x + Math.random() * boss.width, boss.y + Math.random() * boss.height, 'fragment');
+                }
             }
         }
 
@@ -983,7 +1155,7 @@
             player.y + player.height > boss.y
         ) {
             if (!activePowers.shield) {
-                player.health -= 2;
+                player.health -= 1; // Reduced from 2 to 1 damage
                 player.x = 50;
                 player.y = canvas.height - 100;
 
@@ -1169,6 +1341,8 @@
     function updateAbilityCooldowns() {
         if (abilityCooldowns.blast > 0) abilityCooldowns.blast--;
         if (abilityCooldowns.heal > 0) abilityCooldowns.heal--;
+        if (abilityCooldowns.chain > 0) abilityCooldowns.chain--;
+        if (basicAttackCooldown > 0) basicAttackCooldown--;
     }
 
     // Spawn collectible
@@ -1190,6 +1364,24 @@
         }
     }
 
+    // Use basic attack
+    function useBasicAttack() {
+        if (basicAttackCooldown > 0) return;
+
+        // Create a simple projectile
+        projectiles.push({
+            x: player.x + player.width/2,
+            y: player.y + player.height/2,
+            radius: 4,
+            speed: 7,
+            direction: gameState.playerDirection,
+            color: '#6c5ce7',
+            enemy: false
+        });
+
+        basicAttackCooldown = 15; // Short cooldown
+    }
+
     // Use data blast ability
     function useDataBlast() {
         if (abilityCooldowns.blast > 0) return;
@@ -1201,7 +1393,7 @@
                 y: player.y + player.height/2,
                 radius: 6,
                 speed: 7,
-                direction: i * 0.5,
+                direction: gameState.playerDirection + i * 0.3,
                 color: '#6c5ce7',
                 enemy: false
             });
@@ -1218,24 +1410,96 @@
         abilityCooldowns.heal = 180; // 3 second cooldown at 60fps
     }
 
+    // Use chain attack ability
+    function useChainAttack() {
+        if (abilityCooldowns.chain > 0) return;
+
+        if (robots.length > 0) {
+            // Find closest robot
+            let closestRobot = null;
+            let minDistance = Infinity;
+
+            for (const robot of robots) {
+                const dx = robot.x - player.x;
+                const dy = robot.y - player.y;
+                const distance = Math.sqrt(dx*dx + dy*dy);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestRobot = robot;
+                }
+            }
+
+            if (closestRobot) {
+                // Create a chain lightning effect
+                ctx.fillStyle = '#00ffff';
+                ctx.beginPath();
+                ctx.moveTo(player.x + player.width/2, player.y + player.height/2);
+                ctx.lineTo(closestRobot.x + closestRobot.width/2, closestRobot.y + closestRobot.height/2);
+                ctx.stroke();
+
+                // Damage the robot
+                closestRobot.health -= 3;
+
+                if (closestRobot.health <= 0) {
+                    const index = robots.indexOf(closestRobot);
+                    if (index > -1) {
+                        robots.splice(index, 1);
+                        gameState.score += 10;
+                        spawnCollectible(closestRobot.x, closestRobot.y, 'coin');
+                    }
+                }
+            }
+        }
+
+        abilityCooldowns.chain = 240; // 4 second cooldown
+    }
+
+    // Switch attack direction
+    function switchDirection() {
+        gameState.playerDirection *= -1;
+    }
+    //创建机器人数组
+    const robotTypes = [
+        { type: 'normal', health: 1, speed: 1, color: '#ff7675' },
+        { type: 'jumper', health: 1, speed: 0.7, color: '#fd79a8' },
+        { type: 'shooter', health: 2, speed: 0.5, color: '#e17055' },
+        { type: 'tank', health: 3, speed: 0.3, color: '#d63031' }, // 新类型：坦克
+        { type: 'speedy', health: 1, speed: 1.5, color: '#00b894' } // 新类型：快速
+    ];
     // Next level
     function nextLevel() {
+
         gameState.level++;
 
         // Add more robots with increased speed and variety
-        const robotCount = gameState.level + 2;
+        const robotCount = Math.min(gameState.level + 2, 8); // Cap at 8 robots
 
         for (let i = 0; i < robotCount; i++) {
+            const selectedType = robotTypes[Math.floor(Math.random() * robotTypes.length)];
+
             let type = 'normal';
             if (gameState.level >= 2 && Math.random() < 0.3) type = 'jumper';
-            if (gameState.level >= 3 && Math.random() < 0.2) type = 'shooter';
+            if (gameState.level >= 4 && Math.random() < 0.2) type = 'shooter';
 
             const robot = {
-                x: Math.random() * (canvas.width - 60) + 50,
+               /* x: Math.random() * (canvas.width - 60) + 50,
                 y: Math.random() * (canvas.height - 200) + 50,
                 width: 50,
                 height: 50,
-                speed: 1 + Math.random() * gameState.level * 0.5,
+                speed: selectedType.speed + Math.random() * gameState.level * 0.3,
+                direction: Math.random() > 0.5 ? 1 : -1,
+                color: selectedType.color,
+                type: selectedType.type,
+                health: selectedType.health,
+                maxHealth: selectedType.health,
+                grounded: false,
+                velY: 0*/
+               x: Math.random() * (canvas.width - 60) + 50,
+                y: Math.random() * (canvas.height - 200) + 50,
+                width: 50,
+                height: 50,
+                speed: 1 + Math.random() * gameState.level * 0.3, // Reduced speed scaling
                 direction: Math.random() > 0.5 ? 1 : -1,
                 color: '#ff7675',
                 type: type,
@@ -1248,25 +1512,41 @@
             robots.push(robot);
         }
 
-        // Add boss every 3 levels
-        if (gameState.level % 3 === 0) {
+        // Add blue robots (friendly)
+        if (Math.random() < 0.5) {
+            const blueRobotCount = Math.floor(Math.random() * 3) + 1;
+            for (let i = 0; i < blueRobotCount; i++) {
+                blueRobots.push({
+                    x: Math.random() * (canvas.width - 60) + 50,
+                    y: Math.random() * (canvas.height - 200) + 50,
+                    width: 50,
+                    height: 50,
+                    speed: 1,
+                    direction: Math.random() > 0.5 ? 1 : -1,
+                    color: '#3498db'
+                });
+            }
+        }
+
+        // Add boss every 5 levels (instead of 3)
+        if (gameState.level % 5 === 0) {
             gameState.bossActive = true;
             boss = {
                 x: canvas.width / 2 - 40,
                 y: canvas.height - 200,
                 width: 80,
                 height: 80,
-                speed: 2,
+                speed: 1.5, // Reduced speed
                 direction: 1,
                 color: '#ff5555',
-                health: 10 * gameState.level / 3,
-                maxHealth: 10 * gameState.level / 3,
+                health: 5 + 3 * Math.floor(gameState.level / 5), // Reduced health scaling
+                maxHealth: 5 + 3 * Math.floor(gameState.level / 5),
                 velY: 0
             };
         }
 
-        // Add power-ups
-        if (Math.random() < 0.7) {
+        // Add power-ups (more frequently)
+        if (Math.random() < 0.8) {
             powerUps.push({
                 x: Math.random() * (canvas.width - 100) + 50,
                 y: Math.random() * (canvas.height - 200) + 50,
@@ -1277,8 +1557,8 @@
             });
         }
 
-        // Add some coins
-        for (let i = 0; i < 5; i++) {
+        // Add some coins (more coins)
+        for (let i = 0; i < 8; i++) {
             spawnCollectible(
                 Math.random() * (canvas.width - 100) + 50,
                 Math.random() * (canvas.height - 200) + 50,
@@ -1286,13 +1566,15 @@
             );
         }
 
-        // Add data fragments occasionally
-        if (Math.random() < 0.5) {
-            spawnCollectible(
-                Math.random() * (canvas.width - 100) + 50,
-                Math.random() * (canvas.height - 200) + 50,
-                'fragment'
-            );
+        // Add data fragments more frequently
+        if (Math.random() < 0.7) {
+            for (let i = 0; i < 3; i++) {
+                spawnCollectible(
+                    Math.random() * (canvas.width - 100) + 50,
+                    Math.random() * (canvas.height - 200) + 50,
+                    'fragment'
+                );
+            }
         }
     }
 
@@ -1310,6 +1592,8 @@
             player.speed += 0.5;
         } else if (upgrade === 'damage') {
             gameState.playerDamage += 0.2;
+        } else if (upgrade === 'jump') {
+            gameState.jumpPower += 1.5;
         }
 
         document.getElementById('level-up').style.display = 'none';
@@ -1338,6 +1622,8 @@
         gameState.gameOver = false;
         gameState.bossActive = false;
         gameState.playerDamage = 1;
+        gameState.jumpPower = 12;
+        gameState.playerDirection = 1;
 
         // Reset player
         player.x = 50;
@@ -1350,6 +1636,7 @@
 
         // Clear arrays
         robots.length = 0;
+        blueRobots.length = 0;
         powerUps.length = 0;
         coins.length = 0;
         dataFragments.length = 0;
@@ -1358,6 +1645,8 @@
         // Reset abilities
         abilityCooldowns.blast = 0;
         abilityCooldowns.heal = 0;
+        abilityCooldowns.chain = 0;
+        basicAttackCooldown = 0;
 
         // Reset powers
         activePowers.shield = false;
@@ -1387,7 +1676,7 @@
 
         // Jump
         if ((e.key === 'w' || e.key === 'W' || e.key === ' ' || e.key === 'ArrowUp') && player.grounded) {
-            player.velY = -12;
+            player.velY = -gameState.jumpPower;
             player.jumping = true;
             player.grounded = false;
         }
@@ -1399,6 +1688,20 @@
 
         if (e.key === '2') {
             useHeal();
+        }
+
+        if (e.key === '3') {
+            useChainAttack();
+        }
+
+        // Basic attack
+        if (e.key === 'f' || e.key === 'F') {
+            useBasicAttack();
+        }
+
+        // Switch direction
+        if (e.key === 'q' || e.key === 'Q') {
+            switchDirection();
         }
     });
 
@@ -1425,6 +1728,7 @@
     // Ability click events
     document.getElementById('blast-ability').addEventListener('click', useDataBlast);
     document.getElementById('heal-ability').addEventListener('click', useHeal);
+    document.getElementById('chain-ability').addEventListener('click', useChainAttack);
 
     // Upgrade option events
     document.querySelectorAll('.upgrade-option').forEach(option => {
@@ -1440,10 +1744,12 @@
 
         if (keys['a'] || keys['A'] || keys['ArrowLeft']) {
             player.velX = -player.speed;
+            gameState.playerDirection = -1;
         }
 
         if (keys['d'] || keys['D'] || keys['ArrowRight']) {
             player.velX = player.speed;
+            gameState.playerDirection = 1;
         }
     }
 
@@ -1464,6 +1770,5 @@
     ctx.textAlign = 'center';
     ctx.fillText('Click "Start Game" to begin', canvas.width/2, canvas.height/2);
 </script>
-
-
-</body></html>
+</body>
+</html>
