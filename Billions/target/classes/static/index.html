@@ -1,0 +1,734 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web3 Guardian: Eliminate the Robots</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c2461, #1e3799);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .main-wrapper {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 1100px;
+            gap: 20px;
+        }
+        
+        .character-image {
+            flex: 0 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .character-image img {
+            max-width: 180px;
+            height: auto;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+        
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #6c5ce7;
+            text-shadow: 0 0 10px rgba(108, 92, 231, 0.6);
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #a29bfe;
+            margin-bottom: 20px;
+        }
+        
+        .game-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #0d1128;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 2px solid #6c5ce7;
+        }
+        
+        #game-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00cec9;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #81ecec;
+        }
+        
+        .power-ups {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+        }
+        
+        .power-up {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            width: 100px;
+        }
+        
+        .power-up.active {
+            background: rgba(108, 92, 231, 0.3);
+        }
+        
+        .power-up-name {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: white;
+            margin-top: 5px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #6c5ce7, #00cec9);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .instructions h3 {
+            color: #fdcb6e;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            color: #ddd;
+        }
+        
+        .instructions kbd {
+            background: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            display: none;
+        }
+        
+        .game-over-content {
+            background: rgba(12, 36, 97, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #6c5ce7;
+        }
+        
+        .game-over h2 {
+            font-size: 2.5rem;
+            color: #ff7675;
+            margin-bottom: 15px;
+        }
+        
+        .game-over p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #fdcb6e;
+        }
+        
+        footer {
+            margin-top: 20px;
+            color: #a29bfe;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        @media (max-width: 800px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+            
+            .character-image img {
+                max-width: 150px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .game-container {
+                height: 300px;
+            }
+            
+            .power-ups {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .power-up {
+                width: 90px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="character-image">
+            <img src="img/Gy7sYuBboAQhJSa.png" alt="像素风格人物">
+        </div>
+        
+        <div class="container">
+            <h1>Web3 Guardian</h1>
+            <p class="subtitle">Eliminate the Robots, Protect Privacy Data!</p>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="score">0</div>
+                    <div class="stat-label">Privacy Points</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="lives">3</div>
+                    <div class="stat-label">Lives Remaining</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="level">1</div>
+                    <div class="stat-label">Current Level</div>
+                </div>
+            </div>
+            
+            <div class="power-ups">
+                <div class="power-up" id="shield-power">
+                    <i class="fas fa-shield-alt"></i>
+                    <div class="power-up-name">Privacy Shield</div>
+                </div>
+                <div class="power-up" id="zk-power">
+                    <i class="fas fa-key"></i>
+                    <div class="power-up-name">ZK Proof</div>
+                </div>
+                <div class="power-up" id="speed-power">
+                    <i class="fas fa-bolt"></i>
+                    <div class="power-up-name">Speed Boost</div>
+                </div>
+            </div>
+            
+            <div class="game-container">
+                <canvas id="game-canvas"></canvas>
+                <div class="game-over" id="game-over">
+                    <div class="game-over-content">
+                        <h2>Game Over</h2>
+                        <p>Score: <span id="final-score">0</span></p>
+                        <button id="restart-btn">Play Again</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="start-btn"><i class="fas fa-play"></i> Start Game</button>
+                <button id="pause-btn"><i class="fas fa-pause"></i> Pause Game</button>
+            </div>
+            
+            <div class="instructions">
+                <h3>Game Instructions</h3>
+                <ul>
+                    <li>Use <kbd>A</kbd> <kbd>D</kbd> or <kbd>←</kbd> <kbd>→</kbd> to move left and right</li>
+                    <li>Use <kbd>W</kbd> or <kbd>↑</kbd> or <kbd>Space</kbd> to jump</li>
+                    <li>Jump on robots to eliminate them and earn points</li>
+                    <li>Collect blue power-ups for special abilities</li>
+                    <li>Avoid touching robots or you'll lose lives</li>
+                </ul>
+            </div>
+            
+            <footer>
+                <p>Billions Project - Protecting Your Privacy Data in the Web3 World</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // Game canvas and context
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas dimensions
+        function setCanvasSize() {
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+        }
+        setCanvasSize();
+        
+        // Load game images
+        const robotImage = new Image();
+        robotImage.src = 'https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/a4d0878beb28462abf858452c1291ad1.png~tplv-a9rns2rl98-24:720:720.png?rk3s=1fb89129&x-expires=1757081514&x-signature=tQ%2FfNs1%2Fg%2FFTWi0asPwavopW2Oo%3D';
+        
+        // Game state
+        const gameState = {
+            running: false,
+            score: 0,
+            lives: 3,
+            level: 1,
+            gravity: 0.5,
+            gameOver: false
+        };
+        
+        // Player character
+        const player = {
+            x: 50,
+            y: canvas.height - 100,
+            width: 40,
+            height: 40,
+            speed: 5,
+            velX: 0,
+            velY: 0,
+            jumping: false,
+            grounded: false,
+            color: '#6c5ce7'
+        };
+        
+        // Platforms array
+        const platforms = [];
+        function createPlatforms() {
+            platforms.length = 0;
+            platforms.push(
+                // Main bottom platform
+                { x: 0, y: canvas.height - 40, width: canvas.width, height: 40, color: '#2c3e50' },
+                // Other platforms
+                { x: 100, y: canvas.height - 120, width: 100, height: 20, color: '#3498db' },
+                { x: 300, y: canvas.height - 160, width: 100, height: 20, color: '#3498db' },
+                { x: 500, y: canvas.height - 200, width: 100, height: 20, color: '#3498db' },
+                { x: 200, y: canvas.height - 240, width: 100, height: 20, color: '#3498db' },
+                { x: 400, y: canvas.height - 280, width: 100, height: 20, color: '#3498db' }
+            );
+        }
+        createPlatforms();
+        
+        // Robots array
+        const robots = [];
+        
+        // Power-ups array
+        const powerUps = [];
+        
+        // Active powers
+        const activePowers = {
+            shield: false,
+            zk: false,
+            speed: false
+        };
+        
+        // Keyboard control
+        const keys = {};
+        
+        // Update UI display
+        function updateUI() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('lives').textContent = gameState.lives;
+            document.getElementById('level').textContent = gameState.level;
+            
+            // Update power-up display
+            document.getElementById('shield-power').classList.toggle('active', activePowers.shield);
+            document.getElementById('zk-power').classList.toggle('active', activePowers.zk);
+            document.getElementById('speed-power').classList.toggle('active', activePowers.speed);
+        }
+        
+        // Game loop
+        function gameLoop() {
+            if (!gameState.running || gameState.gameOver) return;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Apply gravity
+            player.velY += gameState.gravity;
+            
+            // Update player position
+            player.x += player.velX;
+            player.y += player.velY;
+            
+            // Ensure player doesn't fall below canvas
+            if (player.y > canvas.height - player.height) {
+                player.y = canvas.height - player.height;
+                player.jumping = false;
+                player.grounded = true;
+            }
+            
+            // Ensure player doesn't move outside left/right boundaries
+            if (player.x < 0) {
+                player.x = 0;
+            } else if (player.x > canvas.width - player.width) {
+                player.x = canvas.width - player.width;
+            }
+            
+            // Platform collision detection
+            player.grounded = false;
+            for (const platform of platforms) {
+                if (
+                    player.x < platform.x + platform.width &&
+                    player.x + player.width > platform.x &&
+                    player.y < platform.y + platform.height &&
+                    player.y + player.height > platform.y
+                ) {
+                    // Collision from above
+                    if (player.y + player.height < platform.y + platform.height && player.velY > 0) {
+                        player.y = platform.y - player.height;
+                        player.velY = 0;
+                        player.jumping = false;
+                        player.grounded = true;
+                    }
+                }
+                
+                // Draw platform
+                ctx.fillStyle = platform.color;
+                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+            }
+            
+            // Update and draw robots
+            for (let i = 0; i < robots.length; i++) {
+                const robot = robots[i];
+                
+                // Move robot
+                robot.x += robot.speed * robot.direction;
+                
+                // Change direction when robot hits boundary
+                if (robot.x <= 0 || robot.x >= canvas.width - robot.width) {
+                    robot.direction *= -1;
+                }
+                
+                // Detect if player jumps on robot
+                if (
+                    player.x < robot.x + robot.width &&
+                    player.x + player.width > robot.x &&
+                    player.y < robot.y + robot.height &&
+                    player.y + player.height > robot.y &&
+                    player.velY > 0
+                ) {
+                    // Jumped on robot from above
+                    robots.splice(i, 1);
+                    gameState.score += 10;
+                    player.velY = -10; // Bounce effect
+                    i--;
+                    continue;
+                }
+                
+                // Detect if player touches robot (from side or below)
+                if (
+                    player.x < robot.x + robot.width &&
+                    player.x + player.width > robot.x &&
+                    player.y < robot.y + robot.height &&
+                    player.y + player.height > robot.y
+                ) {
+                    if (!activePowers.shield) {
+                        gameState.lives--;
+                        player.x = 50; // Reset player position
+                        player.y = canvas.height - 100;
+                        
+                        if (gameState.lives <= 0) {
+                            gameOver();
+                        }
+                    }
+                }
+                
+                // Draw robot using image
+                if (robotImage.complete) {
+                    ctx.drawImage(
+                        robotImage, 
+                        robot.x, 
+                        robot.y, 
+                        robot.width, 
+                        robot.height
+                    );
+                } else {
+                    // Fallback to rectangle if image not loaded
+                    ctx.fillStyle = robot.color;
+                    ctx.fillRect(robot.x, robot.y, robot.width, robot.height);
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(robot.x + 5, robot.y + 5, 5, 5);
+                    ctx.fillRect(robot.x + 20, robot.y + 5, 5, 5);
+                }
+            }
+            
+            // Update and draw power-ups
+            for (let i = 0; i < powerUps.length; i++) {
+                const powerUp = powerUps[i];
+                
+                // Detect if player collects power-up
+                if (
+                    player.x < powerUp.x + powerUp.width &&
+                    player.x + player.width > powerUp.x &&
+                    player.y < powerUp.y + powerUp.height &&
+                    player.y + player.height > powerUp.y
+                ) {
+                    // Activate the corresponding power
+                    activePowers[powerUp.type] = true;
+                    powerUps.splice(i, 1);
+                    i--;
+                    
+                    // Power lasts for 10 seconds
+                    setTimeout(() => {
+                        activePowers[powerUp.type] = false;
+                        updateUI();
+                    }, 10000);
+                    
+                    continue;
+                }
+                
+                // Draw power-up
+                ctx.fillStyle = powerUp.color;
+                ctx.fillRect(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
+                
+                // Draw different icons based on type
+                ctx.fillStyle = '#fff';
+                ctx.font = '14px Arial';
+                ctx.fillText(
+                    powerUp.type === 'shield' ? 'S' : powerUp.type === 'zk' ? 'ZK' : 'F',
+                    powerUp.x + 5,
+                    powerUp.y + 15
+                );
+            }
+            
+            // Apply speed power-up
+            player.speed = activePowers.speed ? 8 : 5;
+            
+            // Draw player
+            ctx.fillStyle = activePowers.shield ? '#00cec9' : player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Draw player eyes
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(player.x + 10, player.y + 10, 5, 5);
+            ctx.fillRect(player.x + 25, player.y + 10, 5, 5);
+            
+            // Update UI
+            updateUI();
+            
+            // Check level completion condition
+            if (robots.length === 0) {
+                gameState.level++;
+                nextLevel();
+            }
+            
+            // Continue game loop
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Next level
+        function nextLevel() {
+            // Add more robots with increased speed
+            for (let i = 0; i < gameState.level + 2; i++) {
+                robots.push({
+                    x: Math.random() * (canvas.width - 60) + 50,
+                    y: Math.random() * (canvas.height - 200) + 50,
+                    width: 50,
+                    height: 50,
+                    speed: 1 + Math.random() * gameState.level,
+                    direction: Math.random() > 0.5 ? 1 : -1,
+                    color: '#ff7675'
+                });
+            }
+            
+            // Add power-ups
+            powerUps.push({
+                x: Math.random() * (canvas.width - 100) + 50,
+                y: Math.random() * (canvas.height - 200) + 50,
+                width: 20,
+                height: 20,
+                type: ['shield', 'zk', 'speed'][Math.floor(Math.random() * 3)],
+                color: '#00cec9'
+            });
+        }
+        
+        // Game over
+        function gameOver() {
+            gameState.gameOver = true;
+            gameState.running = false;
+            document.getElementById('final-score').textContent = gameState.score;
+            document.getElementById('game-over').style.display = 'flex';
+        }
+        
+        // Initialize game
+        function initGame() {
+            // Reset game state
+            gameState.running = true;
+            gameState.score = 0;
+            gameState.lives = 3;
+            gameState.level = 1;
+            gameState.gameOver = false;
+            
+            // Reset player
+            player.x = 50;
+            player.y = canvas.height - 100;
+            player.velX = 0;
+            player.velY = 0;
+            
+            // Clear robots and power-ups
+            robots.length = 0;
+            powerUps.length = 0;
+            
+            // Recreate platforms
+            createPlatforms();
+            
+            // Add initial robots and power-ups
+            nextLevel();
+            
+            // Hide game over screen
+            document.getElementById('game-over').style.display = 'none';
+            
+            // Update UI
+            updateUI();
+            
+            // Start game loop
+            gameLoop();
+        }
+        
+        // Event listeners
+        document.addEventListener('keydown', function(e) {
+            keys[e.key] = true;
+            
+            // Jump
+            if ((e.key === 'w' || e.key === 'W' || e.key === ' ' || e.key === 'ArrowUp') && player.grounded) {
+                player.velY = -12;
+                player.jumping = true;
+                player.grounded = false;
+            }
+        });
+        
+        document.addEventListener('keyup', function(e) {
+            keys[e.key] = false;
+        });
+        
+        // Button events
+        document.getElementById('start-btn').addEventListener('click', function() {
+            if (!gameState.running) {
+                initGame();
+            }
+        });
+        
+        document.getElementById('pause-btn').addEventListener('click', function() {
+            gameState.running = !gameState.running;
+            if (gameState.running) {
+                gameLoop();
+            }
+        });
+        
+        document.getElementById('restart-btn').addEventListener('click', initGame);
+        
+        // Handle player movement
+        function handlePlayerMovement() {
+            player.velX = 0;
+            
+            if (keys['a'] || keys['A'] || keys['ArrowLeft']) {
+                player.velX = -player.speed;
+            }
+            
+            if (keys['d'] || keys['D'] || keys['ArrowRight']) {
+                player.velX = player.speed;
+            }
+        }
+        
+        // Movement handling loop
+        setInterval(handlePlayerMovement, 10);
+        
+        // Initialize canvas dimensions on resize
+        window.addEventListener('resize', function() {
+            setCanvasSize();
+            createPlatforms();
+        });
+        
+        // Initial render
+        ctx.fillStyle = '#0d1128';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fff';
+        ctx.font = '20px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Click "Start Game" to begin', canvas.width/2, canvas.height/2);
+    </script>
+
+
+    </body></html>
