@@ -10,7 +10,7 @@
             box-sizing: border-box;
             font-family: 'Arial', sans-serif;
         }
-        
+
         body {
             background: linear-gradient(135deg, #0c2461, #1e3799);
             color: #fff;
@@ -21,7 +21,7 @@
             justify-content: center;
             padding: 20px;
         }
-        
+
         .main-wrapper {
             display: flex;
             align-items: center;
@@ -29,7 +29,7 @@
             max-width: 1100px;
             gap: 20px;
         }
-        
+
         .character-image {
             flex: 0 0 auto;
             display: flex;
@@ -37,13 +37,13 @@
             align-items: center;
             padding: 20px;
         }
-        
+
         .character-image img {
             max-width: 180px;
             height: auto;
             filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
         }
-        
+
         .container {
             flex: 1;
             width: 100%;
@@ -54,20 +54,20 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             text-align: center;
         }
-        
+
         h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
             color: #6c5ce7;
             text-shadow: 0 0 10px rgba(108, 92, 231, 0.6);
         }
-        
+
         .subtitle {
             font-size: 1.1rem;
             color: #a29bfe;
             margin-bottom: 20px;
         }
-        
+
         .game-container {
             position: relative;
             width: 100%;
@@ -78,12 +78,12 @@
             margin: 20px 0;
             border: 2px solid #6c5ce7;
         }
-        
+
         #game-canvas {
             width: 100%;
             height: 100%;
         }
-        
+
         .stats {
             display: flex;
             justify-content: space-around;
@@ -92,54 +92,107 @@
             padding: 10px;
             border-radius: 10px;
         }
-        
+
         .stat {
             text-align: center;
         }
-        
+
         .stat-value {
             font-size: 1.5rem;
             font-weight: bold;
             color: #00cec9;
         }
-        
+
         .stat-label {
             font-size: 0.9rem;
             color: #81ecec;
         }
-        
+
         .power-ups {
             display: flex;
             justify-content: space-around;
             margin: 15px 0;
         }
-        
+
         .power-up {
             text-align: center;
             background: rgba(255, 255, 255, 0.1);
             padding: 10px;
             border-radius: 8px;
             width: 100px;
+            position: relative;
         }
-        
+
         .power-up.active {
             background: rgba(108, 92, 231, 0.3);
         }
-        
+
+        .power-up-cooldown {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 5px;
+            background: #00cec9;
+            width: 0%;
+            border-radius: 0 0 8px 8px;
+        }
+
         .power-up-name {
             font-size: 0.9rem;
             font-weight: bold;
             color: white;
             margin-top: 5px;
         }
-        
+
+        .abilities {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px 0;
+        }
+
+        .ability {
+            text-align: center;
+            background: rgba(255, 193, 7, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+            width: 80px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .ability:not(.disabled):hover {
+            background: rgba(255, 193, 7, 0.3);
+        }
+
+        .ability.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .ability-cooldown {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 5px;
+            background: #ffc107;
+            width: 0%;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .ability-name {
+            font-size: 0.8rem;
+            color: #ffc107;
+            margin-top: 5px;
+        }
+
         .controls {
             display: flex;
             justify-content: center;
             gap: 15px;
             margin-top: 15px;
         }
-        
+
         button {
             background: linear-gradient(135deg, #6c5ce7, #00cec9);
             border: none;
@@ -150,15 +203,15 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        
+
         button:hover {
             transform: scale(1.05);
         }
-        
+
         button:active {
             transform: scale(0.95);
         }
-        
+
         .instructions {
             margin-top: 20px;
             padding: 15px;
@@ -166,29 +219,29 @@
             border-radius: 10px;
             text-align: left;
         }
-        
+
         .instructions h3 {
             color: #fdcb6e;
             margin-bottom: 10px;
         }
-        
+
         .instructions ul {
             list-style-type: none;
             padding: 0;
         }
-        
+
         .instructions li {
             margin-bottom: 8px;
             color: #ddd;
         }
-        
+
         .instructions kbd {
             background: #333;
             padding: 2px 6px;
             border-radius: 4px;
             font-family: monospace;
         }
-        
+
         .game-over {
             position: absolute;
             top: 0;
@@ -203,7 +256,7 @@
             z-index: 100;
             display: none;
         }
-        
+
         .game-over-content {
             background: rgba(12, 36, 97, 0.9);
             padding: 20px;
@@ -211,409 +264,1009 @@
             text-align: center;
             border: 2px solid #6c5ce7;
         }
-        
+
         .game-over h2 {
             font-size: 2.5rem;
             color: #ff7675;
             margin-bottom: 15px;
         }
-        
+
         .game-over p {
             font-size: 1.2rem;
             margin-bottom: 20px;
             color: #fdcb6e;
         }
-        
+
+        .level-up {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #6c5ce7;
+            z-index: 90;
+            display: none;
+        }
+
+        .level-up h2 {
+            font-size: 2rem;
+            color: #00cec9;
+            margin-bottom: 15px;
+        }
+
+        .upgrade-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .upgrade-option {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100px;
+        }
+
+        .upgrade-option:hover {
+            background: rgba(108, 92, 231, 0.3);
+        }
+
         footer {
             margin-top: 20px;
             color: #a29bfe;
             font-size: 0.9rem;
             text-align: center;
         }
-        
+
         @media (max-width: 800px) {
             .main-wrapper {
                 flex-direction: column;
             }
-            
+
             .character-image img {
                 max-width: 150px;
             }
-            
+
             h1 {
                 font-size: 2rem;
             }
-            
+
             .game-container {
                 height: 300px;
             }
-            
-            .power-ups {
+
+            .power-ups, .abilities {
                 flex-wrap: wrap;
                 gap: 10px;
             }
-            
-            .power-up {
+
+            .power-up, .ability {
                 width: 90px;
                 padding: 8px;
+            }
+
+            .upgrade-options {
+                flex-direction: column;
+                align-items: center;
             }
         }
     </style>
 </head>
 <body>
-    <div class="main-wrapper">
-        <div class="character-image">
-            <img src="img/Gy7sYuBboAQhJSa.png" alt="像素风格人物">
+<div class="main-wrapper">
+    <div class="character-image">
+        <img src="img/Gy7sYuBboAQhJSa.png" alt="像素风格人物">
+    </div>
+
+    <div class="container">
+        <h1>Web3 Guardian</h1>
+        <p class="subtitle">Eliminate the Robots, Protect Privacy Data!</p>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-label">Privacy Points</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="lives">3</div>
+                <div class="stat-label">Lives Remaining</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="level">1</div>
+                <div class="stat-label">Current Level</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="coins">0</div>
+                <div class="stat-label">Web3 Coins</div>
+            </div>
         </div>
-        
-        <div class="container">
-            <h1>Web3 Guardian</h1>
-            <p class="subtitle">Eliminate the Robots, Protect Privacy Data!</p>
-            
-            <div class="stats">
-                <div class="stat">
-                    <div class="stat-value" id="score">0</div>
-                    <div class="stat-label">Privacy Points</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" id="lives">3</div>
-                    <div class="stat-label">Lives Remaining</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" id="level">1</div>
-                    <div class="stat-label">Current Level</div>
+
+        <div class="power-ups">
+            <div class="power-up" id="shield-power">
+                <i class="fas fa-shield-alt"></i>
+                <div class="power-up-name">Privacy Shield</div>
+                <div class="power-up-cooldown"></div>
+            </div>
+            <div class="power-up" id="zk-power">
+                <i class="fas fa-key"></i>
+                <div class="power-up-name">ZK Proof</div>
+                <div class="power-up-cooldown"></div>
+            </div>
+            <div class="power-up" id="speed-power">
+                <i class="fas fa-bolt"></i>
+                <div class="power-up-name">Speed Boost</div>
+                <div class="power-up-cooldown"></div>
+            </div>
+        </div>
+
+        <div class="abilities">
+            <div class="ability" id="blast-ability">
+                <i class="fas fa-fire"></i>
+                <div class="ability-name">Data Blast</div>
+                <div class="ability-cooldown"></div>
+            </div>
+            <div class="ability" id="heal-ability">
+                <i class="fas fa-heart"></i>
+                <div class="ability-name">Repair</div>
+                <div class="ability-cooldown"></div>
+            </div>
+        </div>
+
+        <div class="game-container">
+            <canvas id="game-canvas"></canvas>
+            <div class="game-over" id="game-over">
+                <div class="game-over-content">
+                    <h2>Game Over</h2>
+                    <p>Score: <span id="final-score">0</span></p>
+                    <p>Coins Collected: <span id="final-coins">0</span></p>
+                    <button id="restart-btn">Play Again</button>
                 </div>
             </div>
-            
-            <div class="power-ups">
-                <div class="power-up" id="shield-power">
-                    <i class="fas fa-shield-alt"></i>
-                    <div class="power-up-name">Privacy Shield</div>
-                </div>
-                <div class="power-up" id="zk-power">
-                    <i class="fas fa-key"></i>
-                    <div class="power-up-name">ZK Proof</div>
-                </div>
-                <div class="power-up" id="speed-power">
-                    <i class="fas fa-bolt"></i>
-                    <div class="power-up-name">Speed Boost</div>
-                </div>
-            </div>
-            
-            <div class="game-container">
-                <canvas id="game-canvas"></canvas>
-                <div class="game-over" id="game-over">
-                    <div class="game-over-content">
-                        <h2>Game Over</h2>
-                        <p>Score: <span id="final-score">0</span></p>
-                        <button id="restart-btn">Play Again</button>
+            <div class="level-up" id="level-up">
+                <h2>Level Complete!</h2>
+                <p>Choose an upgrade:</p>
+                <div class="upgrade-options">
+                    <div class="upgrade-option" data-upgrade="health">
+                        <i class="fas fa-heart"></i>
+                        <p>+1 Health</p>
+                    </div>
+                    <div class="upgrade-option" data-upgrade="speed">
+                        <i class="fas fa-running"></i>
+                        <p>+10% Speed</p>
+                    </div>
+                    <div class="upgrade-option" data-upgrade="damage">
+                        <i class="fas fa-fist-raised"></i>
+                        <p>+20% Damage</p>
                     </div>
                 </div>
             </div>
-            
-            <div class="controls">
-                <button id="start-btn"><i class="fas fa-play"></i> Start Game</button>
-                <button id="pause-btn"><i class="fas fa-pause"></i> Pause Game</button>
-            </div>
-            
-            <div class="instructions">
-                <h3>Game Instructions</h3>
-                <ul>
-                    <li>Use <kbd>A</kbd> <kbd>D</kbd> or <kbd>←</kbd> <kbd>→</kbd> to move left and right</li>
-                    <li>Use <kbd>W</kbd> or <kbd>↑</kbd> or <kbd>Space</kbd> to jump</li>
-                    <li>Jump on robots to eliminate them and earn points</li>
-                    <li>Collect blue power-ups for special abilities</li>
-                    <li>Avoid touching robots or you'll lose lives</li>
-                </ul>
-            </div>
-            
-            <footer>
-                <p>Billions Project - Protecting Your Privacy Data in the Web3 World</p>
-            </footer>
         </div>
-    </div>
 
-    <script>
-        // Game canvas and context
-        const canvas = document.getElementById('game-canvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Set canvas dimensions
-        function setCanvasSize() {
-            canvas.width = canvas.parentElement.offsetWidth;
-            canvas.height = canvas.parentElement.offsetHeight;
+        <div class="controls">
+            <button id="start-btn"><i class="fas fa-play"></i> Start Game</button>
+            <button id="pause-btn"><i class="fas fa-pause"></i> Pause Game</button>
+        </div>
+
+        <div class="instructions">
+            <h3>Game Instructions</h3>
+            <ul>
+                <li>Use <kbd>A</kbd> <kbd>D</kbd> or <kbd>←</kbd> <kbd>→</kbd> to move left and right</li>
+                <li>Use <kbd>W</kbd> or <kbd>↑</kbd> or <kbd>Space</kbd> to jump</li>
+                <li>Jump on robots to eliminate them and earn points</li>
+                <li>Collect blue power-ups for special abilities</li>
+                <li>Collect yellow coins and green data fragments</li>
+                <li>Use <kbd>1</kbd> for Data Blast and <kbd>2</kbd> for Repair abilities</li>
+                <li>Avoid touching robots or you'll lose lives</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>Billions Project - Protecting Your Privacy Data in the Web3 World</p>
+        </footer>
+    </div>
+</div>
+
+<script>
+    // Game canvas and context
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas dimensions
+    function setCanvasSize() {
+        canvas.width = canvas.parentElement.offsetWidth;
+        canvas.height = canvas.parentElement.offsetHeight;
+    }
+    setCanvasSize();
+
+    // Load game images
+    const robotImage = new Image();
+    robotImage.src = 'https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/a4d0878beb28462abf858452c1291ad1.png~tplv-a9rns2rl98-24:720:720.png?rk3s=1fb89129&x-expires=1757081514&x-signature=tQ%2FfNs1%2Fg%2FFTWi0asPwavopW2Oo%3D';
+
+    const bossImage = new Image();
+    bossImage.src = 'https://img.icons8.com/ios-filled/100/fa314a/robot-2.png';
+
+    // Game state
+    const gameState = {
+        running: false,
+        score: 0,
+        coins: 0,
+        lives: 3,
+        level: 1,
+        gravity: 0.5,
+        gameOver: false,
+        bossActive: false,
+        playerDamage: 1
+    };
+
+    // Player character
+    const player = {
+        x: 50,
+        y: canvas.height - 100,
+        width: 40,
+        height: 40,
+        speed: 5,
+        velX: 0,
+        velY: 0,
+        jumping: false,
+        grounded: false,
+        color: '#6c5ce7',
+        maxHealth: 3,
+        health: 3
+    };
+
+    // Platforms array
+    const platforms = [];
+    function createPlatforms() {
+        platforms.length = 0;
+        platforms.push(
+            // Main bottom platform
+            { x: 0, y: canvas.height - 40, width: canvas.width, height: 40, color: '#2c3e50' },
+            // Other platforms
+            { x: 100, y: canvas.height - 120, width: 100, height: 20, color: '#3498db' },
+            { x: 300, y: canvas.height - 160, width: 100, height: 20, color: '#3498db' },
+            { x: 500, y: canvas.height - 200, width: 100, height: 20, color: '#3498db' },
+            { x: 200, y: canvas.height - 240, width: 100, height: 20, color: '#3498db' },
+            { x: 400, y: canvas.height - 280, width: 100, height: 20, color: '#3498db' },
+            // Moving platforms
+            { x: 600, y: canvas.height - 180, width: 80, height: 15, color: '#9b59b6', moving: true, direction: 1, speed: 1, minX: 550, maxX: 700 }
+        );
+    }
+    createPlatforms();
+
+    // Robots array
+    const robots = [];
+
+    // Boss object
+    let boss = null;
+
+    // Collectibles arrays
+    const coins = [];
+    const dataFragments = [];
+
+    // Power-ups array
+    const powerUps = [];
+
+    // Projectiles array
+    const projectiles = [];
+
+    // Active powers
+    const activePowers = {
+        shield: false,
+        zk: false,
+        speed: false
+    };
+
+    // Ability cooldowns
+    const abilityCooldowns = {
+        blast: 0,
+        heal: 0
+    };
+
+    // Keyboard control
+    const keys = {};
+
+    // Update UI display
+    function updateUI() {
+        document.getElementById('score').textContent = gameState.score;
+        document.getElementById('lives').textContent = gameState.lives;
+        document.getElementById('level').textContent = gameState.level;
+        document.getElementById('coins').textContent = gameState.coins;
+
+        // Update power-up display
+        document.getElementById('shield-power').classList.toggle('active', activePowers.shield);
+        document.getElementById('zk-power').classList.toggle('active', activePowers.zk);
+        document.getElementById('speed-power').classList.toggle('active', activePowers.speed);
+
+        // Update ability cooldowns
+        updateAbilityCooldown('blast', abilityCooldowns.blast);
+        updateAbilityCooldown('heal', abilityCooldowns.heal);
+    }
+
+    // Update ability cooldown display
+    function updateAbilityCooldown(ability, cooldown) {
+        const element = document.getElementById(`${ability}-ability`);
+        const cooldownBar = element.querySelector('.ability-cooldown');
+        const maxCooldown = ability === 'blast' ? 120 : 180;
+
+        if (cooldown > 0) {
+            element.classList.add('disabled');
+            cooldownBar.style.width = `${(cooldown / maxCooldown) * 100}%`;
+        } else {
+            element.classList.remove('disabled');
+            cooldownBar.style.width = '0%';
         }
-        setCanvasSize();
-        
-        // Load game images
-        const robotImage = new Image();
-        robotImage.src = 'https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/a4d0878beb28462abf858452c1291ad1.png~tplv-a9rns2rl98-24:720:720.png?rk3s=1fb89129&x-expires=1757081514&x-signature=tQ%2FfNs1%2Fg%2FFTWi0asPwavopW2Oo%3D';
-        
-        // Game state
-        const gameState = {
-            running: false,
-            score: 0,
-            lives: 3,
-            level: 1,
-            gravity: 0.5,
-            gameOver: false
-        };
-        
-        // Player character
-        const player = {
-            x: 50,
-            y: canvas.height - 100,
-            width: 40,
-            height: 40,
-            speed: 5,
-            velX: 0,
-            velY: 0,
-            jumping: false,
-            grounded: false,
-            color: '#6c5ce7'
-        };
-        
-        // Platforms array
-        const platforms = [];
-        function createPlatforms() {
-            platforms.length = 0;
-            platforms.push(
-                // Main bottom platform
-                { x: 0, y: canvas.height - 40, width: canvas.width, height: 40, color: '#2c3e50' },
-                // Other platforms
-                { x: 100, y: canvas.height - 120, width: 100, height: 20, color: '#3498db' },
-                { x: 300, y: canvas.height - 160, width: 100, height: 20, color: '#3498db' },
-                { x: 500, y: canvas.height - 200, width: 100, height: 20, color: '#3498db' },
-                { x: 200, y: canvas.height - 240, width: 100, height: 20, color: '#3498db' },
-                { x: 400, y: canvas.height - 280, width: 100, height: 20, color: '#3498db' }
-            );
+    }
+
+    // Game loop
+    function gameLoop() {
+        if (!gameState.running || gameState.gameOver) return;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Apply gravity
+        player.velY += gameState.gravity;
+
+        // Update player position
+        player.x += player.velX;
+        player.y += player.velY;
+
+        // Ensure player doesn't fall below canvas
+        if (player.y > canvas.height - player.height) {
+            player.y = canvas.height - player.height;
+            player.jumping = false;
+            player.grounded = true;
         }
-        createPlatforms();
-        
-        // Robots array
-        const robots = [];
-        
-        // Power-ups array
-        const powerUps = [];
-        
-        // Active powers
-        const activePowers = {
-            shield: false,
-            zk: false,
-            speed: false
-        };
-        
-        // Keyboard control
-        const keys = {};
-        
-        // Update UI display
-        function updateUI() {
-            document.getElementById('score').textContent = gameState.score;
-            document.getElementById('lives').textContent = gameState.lives;
-            document.getElementById('level').textContent = gameState.level;
-            
-            // Update power-up display
-            document.getElementById('shield-power').classList.toggle('active', activePowers.shield);
-            document.getElementById('zk-power').classList.toggle('active', activePowers.zk);
-            document.getElementById('speed-power').classList.toggle('active', activePowers.speed);
+
+        // Ensure player doesn't move outside left/right boundaries
+        if (player.x < 0) {
+            player.x = 0;
+        } else if (player.x > canvas.width - player.width) {
+            player.x = canvas.width - player.width;
         }
-        
-        // Game loop
-        function gameLoop() {
-            if (!gameState.running || gameState.gameOver) return;
-            
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Apply gravity
-            player.velY += gameState.gravity;
-            
-            // Update player position
-            player.x += player.velX;
-            player.y += player.velY;
-            
-            // Ensure player doesn't fall below canvas
-            if (player.y > canvas.height - player.height) {
-                player.y = canvas.height - player.height;
-                player.jumping = false;
-                player.grounded = true;
-            }
-            
-            // Ensure player doesn't move outside left/right boundaries
-            if (player.x < 0) {
-                player.x = 0;
-            } else if (player.x > canvas.width - player.width) {
-                player.x = canvas.width - player.width;
-            }
-            
-            // Platform collision detection
-            player.grounded = false;
-            for (const platform of platforms) {
-                if (
-                    player.x < platform.x + platform.width &&
-                    player.x + player.width > platform.x &&
-                    player.y < platform.y + platform.height &&
-                    player.y + player.height > platform.y
-                ) {
-                    // Collision from above
-                    if (player.y + player.height < platform.y + platform.height && player.velY > 0) {
-                        player.y = platform.y - player.height;
-                        player.velY = 0;
-                        player.jumping = false;
-                        player.grounded = true;
-                    }
+
+        // Update moving platforms
+        updateMovingPlatforms();
+
+        // Platform collision detection
+        player.grounded = false;
+        for (const platform of platforms) {
+            if (
+                player.x < platform.x + platform.width &&
+                player.x + player.width > platform.x &&
+                player.y < platform.y + platform.height &&
+                player.y + player.height > platform.y
+            ) {
+                // Collision from above
+                if (player.y + player.height < platform.y + platform.height && player.velY > 0) {
+                    player.y = platform.y - player.height;
+                    player.velY = 0;
+                    player.jumping = false;
+                    player.grounded = true;
                 }
-                
-                // Draw platform
-                ctx.fillStyle = platform.color;
-                ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
             }
-            
-            // Update and draw robots
-            for (let i = 0; i < robots.length; i++) {
-                const robot = robots[i];
-                
-                // Move robot
+
+            // Draw platform
+            ctx.fillStyle = platform.color;
+            ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+        }
+
+        // Update and draw collectibles
+        updateCollectibles();
+
+        // Update and draw robots
+        updateRobots();
+
+        // Update and draw boss
+        updateBoss();
+
+        // Update and draw power-ups
+        updatePowerUps();
+
+        // Update and draw projectiles
+        updateProjectiles();
+
+        // Draw player
+        ctx.fillStyle = activePowers.shield ? '#00cec9' : player.color;
+        ctx.fillRect(player.x, player.y, player.width, player.height);
+
+        // Draw player eyes
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(player.x + 10, player.y + 10, 5, 5);
+        ctx.fillRect(player.x + 25, player.y + 10, 5, 5);
+
+        // Draw health bar
+        drawHealthBar();
+
+        // Update UI
+        updateUI();
+
+        // Update ability cooldowns
+        updateAbilityCooldowns();
+
+        // Check level completion condition
+        if (robots.length === 0 && (!gameState.bossActive || boss.health <= 0)) {
+            if (gameState.bossActive) {
+                gameState.score += 100; // Bonus for defeating boss
+                gameState.bossActive = false;
+                boss = null;
+            }
+
+            gameState.running = false;
+            showLevelUpScreen();
+        }
+
+        // Continue game loop
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Update moving platforms
+    function updateMovingPlatforms() {
+        for (const platform of platforms) {
+            if (platform.moving) {
+                platform.x += platform.speed * platform.direction;
+
+                if (platform.x <= platform.minX || platform.x >= platform.maxX) {
+                    platform.direction *= -1;
+                }
+            }
+        }
+    }
+
+    // Update collectibles
+    function updateCollectibles() {
+        // Draw and check coin collection
+        for (let i = coins.length - 1; i >= 0; i--) {
+            const coin = coins[i];
+
+            // Draw coin
+            ctx.fillStyle = '#ffd700';
+            ctx.beginPath();
+            ctx.arc(coin.x + coin.width/2, coin.y + coin.height/2, coin.width/2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#b8860b';
+            ctx.beginPath();
+            ctx.arc(coin.x + coin.width/2, coin.y + coin.height/2, coin.width/3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Check collection
+            if (
+                player.x < coin.x + coin.width &&
+                player.x + player.width > coin.x &&
+                player.y < coin.y + coin.height &&
+                player.y + player.height > coin.y
+            ) {
+                coins.splice(i, 1);
+                gameState.coins += 1;
+                gameState.score += 5;
+            }
+        }
+
+        // Draw and check data fragment collection
+        for (let i = dataFragments.length - 1; i >= 0; i--) {
+            const fragment = dataFragments[i];
+
+            // Draw data fragment
+            ctx.fillStyle = '#00ff00';
+            ctx.beginPath();
+            ctx.moveTo(fragment.x + fragment.width/2, fragment.y);
+            ctx.lineTo(fragment.x + fragment.width, fragment.y + fragment.height/2);
+            ctx.lineTo(fragment.x + fragment.width/2, fragment.y + fragment.height);
+            ctx.lineTo(fragment.x, fragment.y + fragment.height/2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Check collection
+            if (
+                player.x < fragment.x + fragment.width &&
+                player.x + player.width > fragment.x &&
+                player.y < fragment.y + fragment.height &&
+                player.y + player.height > fragment.y
+            ) {
+                dataFragments.splice(i, 1);
+                gameState.score += 15;
+                // Data fragments might give special abilities in the future
+            }
+        }
+    }
+
+    // Update robots
+    function updateRobots() {
+        for (let i = 0; i < robots.length; i++) {
+            const robot = robots[i];
+
+            // Move robot based on type
+            if (robot.type === 'normal') {
                 robot.x += robot.speed * robot.direction;
-                
+
                 // Change direction when robot hits boundary
                 if (robot.x <= 0 || robot.x >= canvas.width - robot.width) {
                     robot.direction *= -1;
                 }
-                
-                // Detect if player jumps on robot
-                if (
-                    player.x < robot.x + robot.width &&
-                    player.x + player.width > robot.x &&
-                    player.y < robot.y + robot.height &&
-                    player.y + player.height > robot.y &&
-                    player.velY > 0
-                ) {
-                    // Jumped on robot from above
+            } else if (robot.type === 'jumper') {
+                // Jumper robots move more slowly but jump occasionally
+                robot.x += robot.speed * 0.7 * robot.direction;
+
+                // Change direction when robot hits boundary
+                if (robot.x <= 0 || robot.x >= canvas.width - robot.width) {
+                    robot.direction *= -1;
+                }
+
+                // Occasionally jump
+                if (Math.random() < 0.01 && robot.grounded) {
+                    robot.velY = -10;
+                    robot.grounded = false;
+                }
+
+                // Apply gravity to jumper robots
+                robot.velY += gameState.gravity;
+                robot.y += robot.velY;
+
+                // Ground collision for jumper robots
+                if (robot.y > canvas.height - robot.height) {
+                    robot.y = canvas.height - robot.height;
+                    robot.velY = 0;
+                    robot.grounded = true;
+                }
+            } else if (robot.type === 'shooter') {
+                // Shooter robots move slowly and shoot periodically
+                robot.x += robot.speed * 0.5 * robot.direction;
+
+                // Change direction when robot hits boundary
+                if (robot.x <= 0 || robot.x >= canvas.width - robot.width) {
+                    robot.direction *= -1;
+                }
+
+                // Shoot periodically
+                if (Math.random() < 0.01) {
+                    projectiles.push({
+                        x: robot.x + robot.width/2,
+                        y: robot.y + robot.height/2,
+                        radius: 5,
+                        speed: 5,
+                        direction: player.x > robot.x ? 1 : -1,
+                        color: '#ff5555',
+                        enemy: true
+                    });
+                }
+            }
+
+            // Detect if player jumps on robot
+            if (
+                player.x < robot.x + robot.width &&
+                player.x + player.width > robot.x &&
+                player.y < robot.y + robot.height &&
+                player.y + player.height > robot.y &&
+                player.velY > 0
+            ) {
+                // Jumped on robot from above
+                robot.health -= gameState.playerDamage;
+
+                if (robot.health <= 0) {
                     robots.splice(i, 1);
                     gameState.score += 10;
-                    player.velY = -10; // Bounce effect
+                    // Spawn a coin when robot is defeated
+                    spawnCollectible(robot.x, robot.y, 'coin');
                     i--;
-                    continue;
                 }
-                
-                // Detect if player touches robot (from side or below)
-                if (
-                    player.x < robot.x + robot.width &&
-                    player.x + player.width > robot.x &&
-                    player.y < robot.y + robot.height &&
-                    player.y + player.height > robot.y
-                ) {
-                    if (!activePowers.shield) {
+
+                player.velY = -10; // Bounce effect
+                continue;
+            }
+
+            // Detect if player touches robot (from side or below)
+            if (
+                player.x < robot.x + robot.width &&
+                player.x + player.width > robot.x &&
+                player.y < robot.y + robot.height &&
+                player.y + player.height > robot.y
+            ) {
+                if (!activePowers.shield) {
+                    player.health--;
+                    player.x = 50; // Reset player position
+                    player.y = canvas.height - 100;
+
+                    if (player.health <= 0) {
                         gameState.lives--;
-                        player.x = 50; // Reset player position
-                        player.y = canvas.height - 100;
-                        
+                        player.health = player.maxHealth;
+
                         if (gameState.lives <= 0) {
                             gameOver();
                         }
                     }
                 }
-                
-                // Draw robot using image
-                if (robotImage.complete) {
-                    ctx.drawImage(
-                        robotImage, 
-                        robot.x, 
-                        robot.y, 
-                        robot.width, 
-                        robot.height
-                    );
-                } else {
-                    // Fallback to rectangle if image not loaded
-                    ctx.fillStyle = robot.color;
-                    ctx.fillRect(robot.x, robot.y, robot.width, robot.height);
-                    ctx.fillStyle = '#000';
-                    ctx.fillRect(robot.x + 5, robot.y + 5, 5, 5);
-                    ctx.fillRect(robot.x + 20, robot.y + 5, 5, 5);
-                }
             }
-            
-            // Update and draw power-ups
-            for (let i = 0; i < powerUps.length; i++) {
-                const powerUp = powerUps[i];
-                
-                // Detect if player collects power-up
-                if (
-                    player.x < powerUp.x + powerUp.width &&
-                    player.x + player.width > powerUp.x &&
-                    player.y < powerUp.y + powerUp.height &&
-                    player.y + player.height > powerUp.y
-                ) {
-                    // Activate the corresponding power
-                    activePowers[powerUp.type] = true;
-                    powerUps.splice(i, 1);
-                    i--;
-                    
-                    // Power lasts for 10 seconds
-                    setTimeout(() => {
-                        activePowers[powerUp.type] = false;
-                        updateUI();
-                    }, 10000);
-                    
-                    continue;
-                }
-                
-                // Draw power-up
-                ctx.fillStyle = powerUp.color;
-                ctx.fillRect(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
-                
-                // Draw different icons based on type
-                ctx.fillStyle = '#fff';
-                ctx.font = '14px Arial';
-                ctx.fillText(
-                    powerUp.type === 'shield' ? 'S' : powerUp.type === 'zk' ? 'ZK' : 'F',
-                    powerUp.x + 5,
-                    powerUp.y + 15
+
+            // Draw robot using image
+            if (robotImage.complete) {
+                ctx.drawImage(
+                    robotImage,
+                    robot.x,
+                    robot.y,
+                    robot.width,
+                    robot.height
                 );
+            } else {
+                // Fallback to rectangle if image not loaded
+                ctx.fillStyle = robot.color;
+                ctx.fillRect(robot.x, robot.y, robot.width, robot.height);
+                ctx.fillStyle = '#000';
+                ctx.fillRect(robot.x + 5, robot.y + 5, 5, 5);
+                ctx.fillRect(robot.x + 20, robot.y + 5, 5, 5);
             }
-            
-            // Apply speed power-up
-            player.speed = activePowers.speed ? 8 : 5;
-            
-            // Draw player
-            ctx.fillStyle = activePowers.shield ? '#00cec9' : player.color;
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-            
-            // Draw player eyes
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(player.x + 10, player.y + 10, 5, 5);
-            ctx.fillRect(player.x + 25, player.y + 10, 5, 5);
-            
-            // Update UI
-            updateUI();
-            
-            // Check level completion condition
-            if (robots.length === 0) {
-                gameState.level++;
-                nextLevel();
+
+            // Draw health bar for robots
+            if (robot.health < robot.maxHealth) {
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(robot.x, robot.y - 10, robot.width, 5);
+
+                ctx.fillStyle = '#00ff00';
+                ctx.fillRect(robot.x, robot.y - 10, (robot.health / robot.maxHealth) * robot.width, 5);
             }
-            
-            // Continue game loop
-            requestAnimationFrame(gameLoop);
         }
-        
-        // Next level
-        function nextLevel() {
-            // Add more robots with increased speed
-            for (let i = 0; i < gameState.level + 2; i++) {
-                robots.push({
-                    x: Math.random() * (canvas.width - 60) + 50,
-                    y: Math.random() * (canvas.height - 200) + 50,
-                    width: 50,
-                    height: 50,
-                    speed: 1 + Math.random() * gameState.level,
-                    direction: Math.random() > 0.5 ? 1 : -1,
-                    color: '#ff7675'
-                });
+    }
+
+    // Update boss
+    function updateBoss() {
+        if (!gameState.bossActive || !boss) return;
+
+        // Move boss
+        boss.x += boss.speed * boss.direction;
+
+        // Change direction when boss hits boundary
+        if (boss.x <= 0 || boss.x >= canvas.width - boss.width) {
+            boss.direction *= -1;
+        }
+
+        // Boss attacks
+        if (Math.random() < 0.03) {
+            // Shoot projectiles
+            projectiles.push({
+                x: boss.x + boss.width/2,
+                y: boss.y + boss.height/2,
+                radius: 8,
+                speed: 4,
+                direction: player.x > boss.x ? 1 : -1,
+                color: '#ff5555',
+                enemy: true
+            });
+        }
+
+        if (Math.random() < 0.01) {
+            // Jump attack
+            boss.velY = -12;
+        }
+
+        // Apply gravity to boss
+        boss.velY += gameState.gravity;
+        boss.y += boss.velY;
+
+        // Ground collision for boss
+        if (boss.y > canvas.height - boss.height) {
+            boss.y = canvas.height - boss.height;
+            boss.velY = 0;
+        }
+
+        // Detect if player jumps on boss
+        if (
+            player.x < boss.x + boss.width &&
+            player.x + player.width > boss.x &&
+            player.y < boss.y + boss.height &&
+            player.y + player.height > boss.y &&
+            player.velY > 0
+        ) {
+            // Jumped on boss from above
+            boss.health -= gameState.playerDamage;
+            player.velY = -12; // Bounce effect
+
+            if (boss.health <= 0) {
+                gameState.score += 100;
+                // Spawn multiple coins when boss is defeated
+                for (let i = 0; i < 5; i++) {
+                    spawnCollectible(boss.x + Math.random() * boss.width, boss.y + Math.random() * boss.height, 'coin');
+                }
             }
-            
-            // Add power-ups
+        }
+
+        // Detect if player touches boss (from side or below)
+        if (
+            player.x < boss.x + boss.width &&
+            player.x + player.width > boss.x &&
+            player.y < boss.y + boss.height &&
+            player.y + player.height > boss.y
+        ) {
+            if (!activePowers.shield) {
+                player.health -= 2;
+                player.x = 50;
+                player.y = canvas.height - 100;
+
+                if (player.health <= 0) {
+                    gameState.lives--;
+                    player.health = player.maxHealth;
+
+                    if (gameState.lives <= 0) {
+                        gameOver();
+                    }
+                }
+            }
+        }
+
+        // Draw boss
+        if (bossImage.complete) {
+            ctx.drawImage(bossImage, boss.x, boss.y, boss.width, boss.height);
+        } else {
+            ctx.fillStyle = boss.color;
+            ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
+        }
+
+        // Draw boss health bar
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(canvas.width/2 - 100, 20, 200, 15);
+
+        ctx.fillStyle = '#00ff00';
+        ctx.fillRect(canvas.width/2 - 100, 20, (boss.health / boss.maxHealth) * 200, 15);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '12px Arial';
+        ctx.fillText(`BOSS: ${boss.health}/${boss.maxHealth}`, canvas.width/2 - 30, 32);
+    }
+
+    // Update power-ups
+    function updatePowerUps() {
+        for (let i = 0; i < powerUps.length; i++) {
+            const powerUp = powerUps[i];
+
+            // Draw power-up
+            ctx.fillStyle = powerUp.color;
+            ctx.fillRect(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
+
+            // Draw different icons based on type
+            ctx.fillStyle = '#fff';
+            ctx.font = '14px Arial';
+            ctx.fillText(
+                powerUp.type === 'shield' ? 'S' : powerUp.type === 'zk' ? 'ZK' : 'F',
+                powerUp.x + 5,
+                powerUp.y + 15
+            );
+
+            // Detect if player collects power-up
+            if (
+                player.x < powerUp.x + powerUp.width &&
+                player.x + player.width > powerUp.x &&
+                player.y < powerUp.y + powerUp.height &&
+                player.y + player.height > powerUp.y
+            ) {
+                // Activate the corresponding power
+                activePowers[powerUp.type] = true;
+                powerUps.splice(i, 1);
+                i--;
+
+                // Power lasts for 10 seconds
+                setTimeout(() => {
+                    activePowers[powerUp.type] = false;
+                    updateUI();
+                }, 10000);
+            }
+        }
+
+        // Apply speed power-up
+        player.speed = activePowers.speed ? 8 : 5;
+    }
+
+    // Update projectiles
+    function updateProjectiles() {
+        for (let i = projectiles.length - 1; i >= 0; i--) {
+            const projectile = projectiles[i];
+
+            // Move projectile
+            projectile.x += projectile.speed * projectile.direction;
+
+            // Remove projectiles that go off screen
+            if (projectile.x < 0 || projectile.x > canvas.width) {
+                projectiles.splice(i, 1);
+                continue;
+            }
+
+            // Draw projectile
+            ctx.fillStyle = projectile.color;
+            ctx.beginPath();
+            ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Enemy projectiles hurt player
+            if (projectile.enemy) {
+                if (
+                    player.x < projectile.x + projectile.radius &&
+                    player.x + player.width > projectile.x - projectile.radius &&
+                    player.y < projectile.y + projectile.radius &&
+                    player.y + player.height > projectile.y - projectile.radius
+                ) {
+                    if (!activePowers.shield) {
+                        player.health--;
+
+                        if (player.health <= 0) {
+                            gameState.lives--;
+                            player.health = player.maxHealth;
+
+                            if (gameState.lives <= 0) {
+                                gameOver();
+                            }
+                        }
+                    }
+
+                    projectiles.splice(i, 1);
+                }
+            }
+            // Player projectiles damage enemies
+            else {
+                let hit = false;
+
+                // Check against robots
+                for (let j = 0; j < robots.length; j++) {
+                    const robot = robots[j];
+
+                    if (
+                        robot.x < projectile.x + projectile.radius &&
+                        robot.x + robot.width > projectile.x - projectile.radius &&
+                        robot.y < projectile.y + projectile.radius &&
+                        robot.y + robot.height > projectile.y - projectile.radius
+                    ) {
+                        robot.health -= 2;
+
+                        if (robot.health <= 0) {
+                            robots.splice(j, 1);
+                            gameState.score += 10;
+                            spawnCollectible(robot.x, robot.y, 'coin');
+                        }
+
+                        hit = true;
+                        break;
+                    }
+                }
+
+                // Check against boss
+                if (!hit && gameState.bossActive && boss) {
+                    if (
+                        boss.x < projectile.x + projectile.radius &&
+                        boss.x + boss.width > projectile.x - projectile.radius &&
+                        boss.y < projectile.y + projectile.radius &&
+                        boss.y + boss.height > projectile.y - projectile.radius
+                    ) {
+                        boss.health -= 2;
+                        hit = true;
+                    }
+                }
+
+                if (hit) {
+                    projectiles.splice(i, 1);
+                }
+            }
+        }
+    }
+
+    // Draw player health bar
+    function drawHealthBar() {
+        const barWidth = 40;
+        const barHeight = 5;
+        const x = player.x;
+        const y = player.y - 10;
+
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(x, y, barWidth, barHeight);
+
+        ctx.fillStyle = '#00ff00';
+        ctx.fillRect(x, y, (player.health / player.maxHealth) * barWidth, barHeight);
+    }
+
+    // Update ability cooldowns
+    function updateAbilityCooldowns() {
+        if (abilityCooldowns.blast > 0) abilityCooldowns.blast--;
+        if (abilityCooldowns.heal > 0) abilityCooldowns.heal--;
+    }
+
+    // Spawn collectible
+    function spawnCollectible(x, y, type) {
+        if (type === 'coin') {
+            coins.push({
+                x: x,
+                y: y,
+                width: 15,
+                height: 15
+            });
+        } else if (type === 'fragment') {
+            dataFragments.push({
+                x: x,
+                y: y,
+                width: 15,
+                height: 15
+            });
+        }
+    }
+
+    // Use data blast ability
+    function useDataBlast() {
+        if (abilityCooldowns.blast > 0) return;
+
+        // Create multiple projectiles in a spread pattern
+        for (let i = -1; i <= 1; i++) {
+            projectiles.push({
+                x: player.x + player.width/2,
+                y: player.y + player.height/2,
+                radius: 6,
+                speed: 7,
+                direction: i * 0.5,
+                color: '#6c5ce7',
+                enemy: false
+            });
+        }
+
+        abilityCooldowns.blast = 120; // 2 second cooldown at 60fps
+    }
+
+    // Use heal ability
+    function useHeal() {
+        if (abilityCooldowns.heal > 0) return;
+
+        player.health = Math.min(player.health + 1, player.maxHealth);
+        abilityCooldowns.heal = 180; // 3 second cooldown at 60fps
+    }
+
+    // Next level
+    function nextLevel() {
+        gameState.level++;
+
+        // Add more robots with increased speed and variety
+        const robotCount = gameState.level + 2;
+
+        for (let i = 0; i < robotCount; i++) {
+            let type = 'normal';
+            if (gameState.level >= 2 && Math.random() < 0.3) type = 'jumper';
+            if (gameState.level >= 3 && Math.random() < 0.2) type = 'shooter';
+
+            const robot = {
+                x: Math.random() * (canvas.width - 60) + 50,
+                y: Math.random() * (canvas.height - 200) + 50,
+                width: 50,
+                height: 50,
+                speed: 1 + Math.random() * gameState.level * 0.5,
+                direction: Math.random() > 0.5 ? 1 : -1,
+                color: '#ff7675',
+                type: type,
+                health: type === 'shooter' ? 2 : 1,
+                maxHealth: type === 'shooter' ? 2 : 1,
+                grounded: false,
+                velY: 0
+            };
+
+            robots.push(robot);
+        }
+
+        // Add boss every 3 levels
+        if (gameState.level % 3 === 0) {
+            gameState.bossActive = true;
+            boss = {
+                x: canvas.width / 2 - 40,
+                y: canvas.height - 200,
+                width: 80,
+                height: 80,
+                speed: 2,
+                direction: 1,
+                color: '#ff5555',
+                health: 10 * gameState.level / 3,
+                maxHealth: 10 * gameState.level / 3,
+                velY: 0
+            };
+        }
+
+        // Add power-ups
+        if (Math.random() < 0.7) {
             powerUps.push({
                 x: Math.random() * (canvas.width - 100) + 50,
                 y: Math.random() * (canvas.height - 200) + 50,
@@ -623,112 +1276,194 @@
                 color: '#00cec9'
             });
         }
-        
-        // Game over
-        function gameOver() {
-            gameState.gameOver = true;
-            gameState.running = false;
-            document.getElementById('final-score').textContent = gameState.score;
-            document.getElementById('game-over').style.display = 'flex';
+
+        // Add some coins
+        for (let i = 0; i < 5; i++) {
+            spawnCollectible(
+                Math.random() * (canvas.width - 100) + 50,
+                Math.random() * (canvas.height - 200) + 50,
+                'coin'
+            );
         }
-        
-        // Initialize game
-        function initGame() {
-            // Reset game state
-            gameState.running = true;
-            gameState.score = 0;
-            gameState.lives = 3;
-            gameState.level = 1;
-            gameState.gameOver = false;
-            
-            // Reset player
-            player.x = 50;
-            player.y = canvas.height - 100;
-            player.velX = 0;
-            player.velY = 0;
-            
-            // Clear robots and power-ups
-            robots.length = 0;
-            powerUps.length = 0;
-            
-            // Recreate platforms
-            createPlatforms();
-            
-            // Add initial robots and power-ups
-            nextLevel();
-            
-            // Hide game over screen
-            document.getElementById('game-over').style.display = 'none';
-            
-            // Update UI
-            updateUI();
-            
-            // Start game loop
+
+        // Add data fragments occasionally
+        if (Math.random() < 0.5) {
+            spawnCollectible(
+                Math.random() * (canvas.width - 100) + 50,
+                Math.random() * (canvas.height - 200) + 50,
+                'fragment'
+            );
+        }
+    }
+
+    // Show level up screen
+    function showLevelUpScreen() {
+        document.getElementById('level-up').style.display = 'block';
+    }
+
+    // Apply upgrade
+    function applyUpgrade(upgrade) {
+        if (upgrade === 'health') {
+            player.maxHealth++;
+            player.health = player.maxHealth;
+        } else if (upgrade === 'speed') {
+            player.speed += 0.5;
+        } else if (upgrade === 'damage') {
+            gameState.playerDamage += 0.2;
+        }
+
+        document.getElementById('level-up').style.display = 'none';
+        gameState.running = true;
+        nextLevel();
+        gameLoop();
+    }
+
+    // Game over
+    function gameOver() {
+        gameState.gameOver = true;
+        gameState.running = false;
+        document.getElementById('final-score').textContent = gameState.score;
+        document.getElementById('final-coins').textContent = gameState.coins;
+        document.getElementById('game-over').style.display = 'flex';
+    }
+
+    // Initialize game
+    function initGame() {
+        // Reset game state
+        gameState.running = true;
+        gameState.score = 0;
+        gameState.coins = 0;
+        gameState.lives = 3;
+        gameState.level = 1;
+        gameState.gameOver = false;
+        gameState.bossActive = false;
+        gameState.playerDamage = 1;
+
+        // Reset player
+        player.x = 50;
+        player.y = canvas.height - 100;
+        player.velX = 0;
+        player.velY = 0;
+        player.speed = 5;
+        player.maxHealth = 3;
+        player.health = 3;
+
+        // Clear arrays
+        robots.length = 0;
+        powerUps.length = 0;
+        coins.length = 0;
+        dataFragments.length = 0;
+        projectiles.length = 0;
+
+        // Reset abilities
+        abilityCooldowns.blast = 0;
+        abilityCooldowns.heal = 0;
+
+        // Reset powers
+        activePowers.shield = false;
+        activePowers.zk = false;
+        activePowers.speed = false;
+
+        // Recreate platforms
+        createPlatforms();
+
+        // Add initial robots and power-ups
+        nextLevel();
+
+        // Hide game over and level up screens
+        document.getElementById('game-over').style.display = 'none';
+        document.getElementById('level-up').style.display = 'none';
+
+        // Update UI
+        updateUI();
+
+        // Start game loop
+        gameLoop();
+    }
+
+    // Event listeners
+    document.addEventListener('keydown', function(e) {
+        keys[e.key] = true;
+
+        // Jump
+        if ((e.key === 'w' || e.key === 'W' || e.key === ' ' || e.key === 'ArrowUp') && player.grounded) {
+            player.velY = -12;
+            player.jumping = true;
+            player.grounded = false;
+        }
+
+        // Ability keys
+        if (e.key === '1') {
+            useDataBlast();
+        }
+
+        if (e.key === '2') {
+            useHeal();
+        }
+    });
+
+    document.addEventListener('keyup', function(e) {
+        keys[e.key] = false;
+    });
+
+    // Button events
+    document.getElementById('start-btn').addEventListener('click', function() {
+        if (!gameState.running) {
+            initGame();
+        }
+    });
+
+    document.getElementById('pause-btn').addEventListener('click', function() {
+        gameState.running = !gameState.running;
+        if (gameState.running) {
             gameLoop();
         }
-        
-        // Event listeners
-        document.addEventListener('keydown', function(e) {
-            keys[e.key] = true;
-            
-            // Jump
-            if ((e.key === 'w' || e.key === 'W' || e.key === ' ' || e.key === 'ArrowUp') && player.grounded) {
-                player.velY = -12;
-                player.jumping = true;
-                player.grounded = false;
-            }
+    });
+
+    document.getElementById('restart-btn').addEventListener('click', initGame);
+
+    // Ability click events
+    document.getElementById('blast-ability').addEventListener('click', useDataBlast);
+    document.getElementById('heal-ability').addEventListener('click', useHeal);
+
+    // Upgrade option events
+    document.querySelectorAll('.upgrade-option').forEach(option => {
+        option.addEventListener('click', function() {
+            if (gameState.running) return;
+            applyUpgrade(this.dataset.upgrade);
         });
-        
-        document.addEventListener('keyup', function(e) {
-            keys[e.key] = false;
-        });
-        
-        // Button events
-        document.getElementById('start-btn').addEventListener('click', function() {
-            if (!gameState.running) {
-                initGame();
-            }
-        });
-        
-        document.getElementById('pause-btn').addEventListener('click', function() {
-            gameState.running = !gameState.running;
-            if (gameState.running) {
-                gameLoop();
-            }
-        });
-        
-        document.getElementById('restart-btn').addEventListener('click', initGame);
-        
-        // Handle player movement
-        function handlePlayerMovement() {
-            player.velX = 0;
-            
-            if (keys['a'] || keys['A'] || keys['ArrowLeft']) {
-                player.velX = -player.speed;
-            }
-            
-            if (keys['d'] || keys['D'] || keys['ArrowRight']) {
-                player.velX = player.speed;
-            }
+    });
+
+    // Handle player movement
+    function handlePlayerMovement() {
+        player.velX = 0;
+
+        if (keys['a'] || keys['A'] || keys['ArrowLeft']) {
+            player.velX = -player.speed;
         }
-        
-        // Movement handling loop
-        setInterval(handlePlayerMovement, 10);
-        
-        // Initialize canvas dimensions on resize
-        window.addEventListener('resize', function() {
-            setCanvasSize();
-            createPlatforms();
-        });
-        
-        // Initial render
-        ctx.fillStyle = '#0d1128';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#fff';
-        ctx.font = '20px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('Click "Start Game" to begin', canvas.width/2, canvas.height/2);
-    </script>
+
+        if (keys['d'] || keys['D'] || keys['ArrowRight']) {
+            player.velX = player.speed;
+        }
+    }
+
+    // Movement handling loop
+    setInterval(handlePlayerMovement, 10);
+
+    // Initialize canvas dimensions on resize
+    window.addEventListener('resize', function() {
+        setCanvasSize();
+        createPlatforms();
+    });
+
+    // Initial render
+    ctx.fillStyle = '#0d1128';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#fff';
+    ctx.font = '20px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Click "Start Game" to begin', canvas.width/2, canvas.height/2);
+</script>
 
 
-    </body></html>
+</body></html>
