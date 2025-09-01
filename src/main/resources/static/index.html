@@ -6,18 +6,78 @@
     <title>BILLIONS: Eliminate the Robots</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* 全局样式 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        
+        /* 滚动条样式优化 */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #6c5ce7, #00cec9);
+            border-radius: 10px;
+            border: 2px solid rgba(0, 0, 0, 0.3);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #a29bfe, #81ecec);
+        }
+
+        /* 基础动画 */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(108, 92, 231, 0.6); }
+            50% { box-shadow: 0 0 20px rgba(108, 92, 231, 0.8), 0 0 30px rgba(0, 206, 201, 0.4); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 背景动画 */
+        /* 背景动画 */
+        @keyframes backgroundMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+
+        @keyframes backgroundMoveSlow {
+            0% { background-position: 0 0; }
+            100% { background-position: 25px 25px; }
+        }
+
+        @keyframes backgroundMoveReverse {
+            0% { background-position: 0 0; }
+            100% { background-position: -30px -30px; }
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            background-image: url("./img/background.png");
-            /*
-            background: linear-gradient(135deg, #0c2461, #1e3799);
-            */
             color: #fff;
             min-height: 100vh;
             display: flex;
@@ -25,63 +85,167 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            animation: fadeIn 0.8s ease-out;
+            position: relative;
         }
 
+        /* 背景层容器 */
+        .bg-layers {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 单层背景 - 正常大小不变形 */
+        .bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('./img/background.png');
+            background-repeat: repeat;
+            opacity: 0.8;
+            background-size: auto; /* 保持图片原始大小不变形 */
+            animation: backgroundMove 20s linear infinite alternate; /* 优化动态效果：加快速度并往返动画 */
+            transition: all 0.5s ease;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.3); /* 优化画面层次感 */
+        }
+
+        /* 主容器样式 */
         .main-wrapper {
             display: flex;
             align-items: center;
             width: 100%;
-            max-width: 1100px;
-            gap: 20px;
+            max-width: 1200px;
+            gap: 30px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
+        /* 角色图片样式 */
         .character-image {
             flex: 0 0 auto;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            animation: float 3s ease-in-out infinite;
         }
 
         .character-image img {
-            max-width: 180px;
+            max-width: 200px;
             height: auto;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+            filter: drop-shadow(0 0 15px rgba(108, 92, 231, 0.6));
+            transition: transform 0.3s ease;
         }
 
+        .character-image img:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        /* 游戏容器样式 */
         .container {
             flex: 1;
             width: 100%;
-            max-width: 800px;
-            background: rgba(0, 0, 0, 95%);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            max-width: 850px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(12, 36, 97, 0.7));
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 60px rgba(108, 92, 231, 0.1);
             text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(108, 92, 231, 0.3);
+            animation: fadeIn 0.5s ease-out 0.2s both;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(108, 92, 231, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
+        /* 标题样式 */
         h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin-bottom: 10px;
-            color: #6c5ce7;
-            text-shadow: 0 0 10px rgba(108, 92, 231, 0.6);
+            text-shadow: 0 0 15px rgba(108, 92, 231, 0.8), 0 0 30px rgba(108, 92, 231, 0.4);
+            font-weight: 800;
+            letter-spacing: 1px;
+            animation: pulse 2s ease-in-out infinite;
+            background: linear-gradient(90deg, #6c5ce7, #00cec9, #6c5ce7);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: titleGlow 5s ease-in-out infinite;
+        }
+        
+        @keyframes titleGlow {
+            0% { background-position: 0% center; }
+            50% { background-position: 100% center; }
+            100% { background-position: 0% center; }
         }
 
         .subtitle {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: #a29bfe;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            font-weight: 300;
+            animation: fadeIn 0.5s ease-out 0.4s both;
         }
 
+        /* 游戏画布容器 */
         .game-container {
             position: relative;
             width: 100%;
-            height: 400px;
-            background: #0d1128;
-            border-radius: 10px;
+            height: 420px;
+            background: linear-gradient(135deg, #0d1128, #1a1f42);
+            border-radius: 15px;
             overflow: hidden;
-            margin: 20px 0;
-            border: 2px solid #6c5ce7;
+            margin: 25px 0;
+            border: 3px solid #6c5ce7;
+            box-shadow: 0 0 25px rgba(108, 92, 231, 0.3), inset 0 0 50px rgba(0, 0, 0, 0.5);
+            animation: glow 3s ease-in-out infinite;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .game-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00cec9, transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .game-container:hover {
+            box-shadow: 0 0 35px rgba(108, 92, 231, 0.5), 0 0 50px rgba(0, 206, 201, 0.2);
         }
 
         #game-canvas {
@@ -89,47 +253,110 @@
             height: 100%;
         }
 
+        /* 统计数据样式 */
         .stats {
             display: flex;
             justify-content: space-around;
-            margin: 15px 0;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px;
-            border-radius: 10px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(12, 36, 97, 0.4));
+            padding: 15px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 206, 201, 0.3);
+            animation: fadeIn 0.5s ease-out 0.6s both;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
         }
 
         .stat {
             text-align: center;
+            padding: 10px 15px;
+            transition: transform 0.3s ease, all 0.3s ease;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .stat:hover {
+            transform: scale(1.05);
         }
 
         .stat-value {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: #00cec9;
+            text-shadow: 0 0 10px rgba(0, 206, 201, 0.5);
+            display: block;
+            margin-bottom: 5px;
+            font-variant-numeric: tabular-nums;
         }
 
         .stat-label {
             font-size: 0.9rem;
             color: #81ecec;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
         }
 
+        /* 能量提升样式 */
         .power-ups {
             display: flex;
-            justify-content: space-around;
-            margin: 15px 0;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            animation: fadeIn 0.5s ease-out 0.8s both;
         }
 
         .power-up {
             text-align: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            width: 100px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            padding: 15px 12px;
+            border-radius: 12px;
+            width: 110px;
             position: relative;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            overflow: hidden;
+        }
+        
+        .power-up::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(30deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+        
+        .power-up:hover::before {
+            opacity: 1;
+            transform: rotate(30deg) translateX(100%);
+        }
+
+        .power-up:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.2), rgba(108, 92, 231, 0.1));
         }
 
         .power-up.active {
-            background: rgba(108, 92, 231, 0.3);
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.4), rgba(108, 92, 231, 0.2));
+            box-shadow: 0 0 20px rgba(108, 92, 231, 0.4);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .power-up i {
+            font-size: 2rem;
+            color: #00cec9;
+            margin-bottom: 8px;
+            display: block;
         }
 
         .power-up-cooldown {
@@ -139,40 +366,77 @@
             height: 5px;
             background: #00cec9;
             width: 0%;
-            border-radius: 0 0 8px 8px;
+            border-radius: 0 0 12px 12px;
+            transition: width 0.1s linear;
         }
 
         .power-up-name {
-            font-size: 0.9rem;
-            font-weight: bold;
+            font-size: 0.95rem;
+            font-weight: 600;
             color: white;
             margin-top: 5px;
+            letter-spacing: 0.5px;
         }
 
+        /* 技能样式 */
         .abilities {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin: 10px 0;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            animation: fadeIn 0.5s ease-out 1s both;
         }
 
         .ability {
             text-align: center;
-            background: rgba(255, 193, 7, 0.1);
-            padding: 8px;
-            border-radius: 8px;
-            width: 80px;
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05));
+            padding: 12px;
+            border-radius: 12px;
+            width: 90px;
             cursor: pointer;
             position: relative;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(5px);
+            overflow: hidden;
+        }
+        
+        .ability::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(30deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+        
+        .ability:hover::before {
+            opacity: 1;
+            transform: rotate(30deg) translateX(100%);
         }
 
         .ability:not(.disabled):hover {
-            background: rgba(255, 193, 7, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.3), rgba(255, 193, 7, 0.1));
         }
 
         .ability.disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
+        }
+
+        .ability i {
+            font-size: 1.8rem;
+            color: #ffc107;
+            margin-bottom: 8px;
+            display: block;
         }
 
         .ability-cooldown {
@@ -182,52 +446,108 @@
             height: 5px;
             background: #ffc107;
             width: 0%;
-            border-radius: 0 0 8px 8px;
+            border-radius: 0 0 12px 12px;
+            transition: width 0.1s linear;
         }
 
         .ability-name {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #ffc107;
             margin-top: 5px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
+        /* 控制按钮样式 */
         .controls {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
+            gap: 20px;
+            margin: 25px 0;
+            animation: fadeIn 0.5s ease-out 1.2s both;
         }
 
         button {
             background: linear-gradient(135deg, #6c5ce7, #00cec9);
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 14px 25px;
+            border-radius: 12px;
             color: white;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #6c5ce7, #00cec9, #6c5ce7);
+            z-index: -1;
+            animation: glowing 3s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 14px;
+        }
+
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
         }
 
         button:hover {
-            transform: scale(1.05);
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.5);
+        }
+
+        button:hover::before {
+            opacity: 1;
+            animation: glowing 2s linear infinite;
         }
 
         button:active {
-            transform: scale(0.95);
+            transform: translateY(1px) scale(0.98);
+            box-shadow: 0 2px 10px rgba(108, 92, 231, 0.3);
+        }
+        
+        button:focus {
+            outline: 2px solid #00cec9;
+            outline-offset: 3px;
         }
 
+        button i {
+            margin-right: 8px;
+        }
+
+        /* 游戏说明样式 */
         .instructions {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            margin-top: 25px;
+            padding: 20px 25px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            border-radius: 15px;
             text-align: left;
+            border: 1px solid rgba(253, 203, 110, 0.2);
+            animation: fadeIn 0.5s ease-out 1.4s both;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
         }
 
         .instructions h3 {
             color: #fdcb6e;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(253, 203, 110, 0.3);
         }
 
         .instructions ul {
@@ -236,70 +556,127 @@
         }
 
         .instructions li {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #ddd;
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+            transition: transform 0.2s ease;
+        }
+
+        .instructions li:hover {
+            transform: translateX(5px);
+            color: #fff;
+        }
+
+        .instructions li::before {
+            content: '•';
+            color: #fdcb6e;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-right: 10px;
         }
 
         .instructions kbd {
-            background: #333;
-            padding: 2px 6px;
-            border-radius: 4px;
+            background: linear-gradient(135deg, #444, #333);
+            padding: 4px 8px;
+            border-radius: 6px;
             font-family: monospace;
+            margin: 0 5px;
+            font-weight: bold;
+            color: #fdcb6e;
+            border: 1px solid #555;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
+        /* 游戏结束界面 */
         .game-over {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 100;
             display: none;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .game-over-content {
-            background: rgba(12, 36, 97, 0.9);
-            padding: 20px;
-            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(12, 36, 97, 0.95), rgba(30, 55, 153, 0.85));
+            padding: 30px;
+            border-radius: 20px;
             text-align: center;
             border: 2px solid #6c5ce7;
+            box-shadow: 0 0 40px rgba(108, 92, 231, 0.4);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .game-over-content:hover {
+            transform: scale(1);
         }
 
         .game-over h2 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             color: #ff7675;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 118, 117, 0.6);
+            animation: pulse 1.5s ease-in-out infinite;
         }
 
         .game-over p {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
             color: #fdcb6e;
+            font-weight: 500;
         }
 
+        .game-over p span {
+            color: #00cec9;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 206, 201, 0.5);
+        }
+
+        /* 升级界面 */
         .level-up {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 15px;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(12, 36, 97, 0.8));
+            padding: 25px;
+            border-radius: 20px;
             text-align: center;
-            border: 2px solid #6c5ce7;
+            border: 3px solid #6c5ce7;
             z-index: 90;
             display: none;
+            animation: fadeIn 0.5s ease-out;
+            box-shadow: 0 0 50px rgba(108, 92, 231, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .level-up:hover {
+            transform: translate(-50%, -50%) scale(1);
         }
 
         .level-up h2 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             color: #00cec9;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(0, 206, 201, 0.6);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .level-up p {
+            font-size: 1.1rem;
+            color: #fdcb6e;
+            margin-bottom: 20px;
+            font-weight: 500;
         }
 
         .upgrade-options {
@@ -307,63 +684,239 @@
             justify-content: center;
             gap: 15px;
             margin-top: 15px;
+            flex-wrap: wrap;
         }
 
         .upgrade-option {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            padding: 15px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            width: 100px;
+            transition: all 0.3s ease;
+            width: 120px;
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            position: relative;
+            overflow: hidden;
         }
 
         .upgrade-option:hover {
-            background: rgba(108, 92, 231, 0.3);
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.3), rgba(108, 92, 231, 0.1));
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 5px 20px rgba(108, 92, 231, 0.4);
+            border-color: rgba(108, 92, 231, 0.5);
         }
 
-        footer {
-            margin-top: 20px;
-            color: #a29bfe;
+        .upgrade-option i {
+            font-size: 2rem;
+            color: #00cec9;
+            margin-bottom: 10px;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .upgrade-option:hover i {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .upgrade-option p {
             font-size: 0.9rem;
+            color: white;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        /* 页脚样式 */
+        footer {
+            margin-top: 25px;
+            color: #a29bfe;
+            font-size: 0.95rem;
             text-align: center;
+            animation: fadeIn 0.5s ease-out 1.6s both;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* 音乐控制样式 */
+        .music-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.8), rgba(0, 206, 201, 0.8));
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.7);
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #6c5ce7, #00cec9);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(108, 92, 231, 0.6);
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #6c5ce7, #00cec9);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(108, 92, 231, 0.6);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1000px) {
+            .main-wrapper {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .character-image img {
+                max-width: 180px;
+            }
         }
 
         @media (max-width: 800px) {
-            .main-wrapper {
-                flex-direction: column;
+            body {
+                padding: 15px;
             }
-
-            .character-image img {
-                max-width: 150px;
+            
+            .container {
+                padding: 20px;
+                border-radius: 15px;
             }
-
+            
             h1 {
-                font-size: 2rem;
+                font-size: 2.5rem;
             }
-
+            
             .game-container {
-                height: 300px;
+                height: 350px;
+                margin: 20px 0;
             }
-
-            .power-ups, .abilities {
+            
+            .stats {
                 flex-wrap: wrap;
                 gap: 10px;
             }
-
-            .power-up, .ability {
-                width: 90px;
-                padding: 8px;
+            
+            .stat {
+                flex: 1 1 40%;
+                min-width: 140px;
             }
-
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .power-ups, .abilities {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            
+            .power-up {
+                width: 100px;
+                padding: 12px;
+            }
+            
+            .ability {
+                width: 80px;
+                padding: 10px;
+            }
+            
             .upgrade-options {
                 flex-direction: column;
                 align-items: center;
+                gap: 12px;
+            }
+            
+            .upgrade-option {
+                width: 140px;
+            }
+            
+            button {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 500px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .game-container {
+                height: 300px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .instructions li {
+                font-size: 0.9rem;
+            }
+            
+            .game-over h2 {
+                font-size: 2rem;
+            }
+            
+            .level-up h2 {
+                font-size: 1.8rem;
             }
         }
     </style>
 </head>
 <body>
+<!-- 单层背景容器 -->
+<div class="bg-layers">
+    <div class="bg-layer"></div>
+</div>
+
 <div class="main-wrapper">
     <div class="character-image">
         <img src="./img/Javi.png" alt="Web3 Guardian Character">
@@ -474,7 +1027,7 @@
                 <li>Use <kbd>W</kbd> or <kbd>↑</kbd> or <kbd>Space</kbd> to jump</li>
                 <li>Jump on robots to eliminate them and earn points</li>
                 <li>Collect blue power-ups for special abilities</li>
-                <li>Collect yellow coins and green data fragments</li>
+                <li>Collect yellow coins to earn points</li>
                 <li>Use <kbd>1</kbd> for Data Blast, <kbd>2</kbd> for Repair, and <kbd>3</kbd> for Chain Attack</li>
                 <li>Press <kbd>F</kbd> for basic attack (no cooldown)</li>
                 <li>Press <kbd>Q</kbd> to switch attack direction</li>
@@ -489,1286 +1042,35 @@
     </div>
 </div>
 
-<script>
-    // Game canvas and context
-    const canvas = document.getElementById('game-canvas');
-    const ctx = canvas.getContext('2d');
-
-    // Set canvas dimensions
-    function setCanvasSize() {
-        canvas.width = canvas.parentElement.offsetWidth;
-        canvas.height = canvas.parentElement.offsetHeight;
-    }
-    setCanvasSize();
-
-    // Load game images
-    const playerImage = new Image();
-    playerImage.src = './img/Javi.png'; // Red character from the original code
-
-    const enemyRobotImage = new Image();
-    enemyRobotImage.src = 'https://img.icons8.com/ios-filled/100/fa314a/robot-2.png'; // Red enemy robot
-
-    const bossImage = new Image();
-    bossImage.src = 'https://img.icons8.com/ios-filled/100/ff6b6b/robot-3.png'; // Boss robot
-
-    const blueRobotImage = new Image();
-    blueRobotImage.src = './img/BillionsTap.png' ; // Blue robot from the original code
-
-    // Game state
-    const gameState = {
-        running: false,
-        score: 0,
-        coins: 0,
-        lives: 3,
-        level: 1,
-        gravity: 0.5,
-        gameOver: false,
-        bossActive: false,
-        playerDamage: 1,
-        jumpPower: 12,
-        playerDirection: 1 // 1 for right, -1 for left
-    };
-
-    // Player character
-    const player = {
-        x: 50,
-        y: canvas.height - 100,
-        width: 40,
-        height: 40,
-        speed: 5,
-        velX: 0,
-        velY: 0,
-        jumping: false,
-        grounded: false,
-        color: '#6c5ce7',
-        maxHealth: 3,
-        health: 3
-    };
-
-    // Platforms array
-    const platforms = [];
-    function createPlatforms() {
-
-
-        platforms.length = 0;
-        platforms.push(
-            // 主平台
-            { x: 0, y: canvas.height - 40, width: canvas.width, height: 40, color: '#2c3e50' },
-
-            // 更多平台
-            { x: 100, y: canvas.height - 120, width: 100, height: 20, color: '#3498db' },
-            { x: 300, y: canvas.height - 160, width: 100, height: 20, color: '#3498db' },
-            { x: 500, y: canvas.height - 200, width: 100, height: 20, color: '#3498db' },
-            { x: 700, y: canvas.height - 240, width: 100, height: 20, color: '#3498db' },
-            { x: 200, y: canvas.height - 280, width: 100, height: 20, color: '#3498db' },
-            { x: 400, y: canvas.height - 320, width: 100, height: 20, color: '#3498db' },
-            { x: 600, y: canvas.height - 360, width: 100, height: 20, color: '#3498db' },
-
-            // 移动平台
-            { x: 600, y: canvas.height - 180, width: 80, height: 15, color: '#9b59b6', moving: true, direction: 1, speed: 1, minX: 550, maxX: 700 },
-            { x: 200, y: canvas.height - 220, width: 80, height: 15, color: '#9b59b6', moving: true, direction: 1, speed: 1.5, minX: 150, maxX: 300 },
-
-            // 弹跳平台
-            { x: 400, y: canvas.height - 100, width: 80, height: 15, color: '#e74c3c', bounce: true, bouncePower: 15 }
-        );
-        /*
-
-
-        platforms.length = 0;
-        platforms.push(
-            // Main bottom platform
-            { x: 0, y: canvas.height - 40, width: canvas.width, height: 40, color: '#2c3e50' },
-            // Other platforms
-            { x: 100, y: canvas.height - 120, width: 100, height: 20, color: '#3498db' },
-            { x: 300, y: canvas.height - 160, width: 100, height: 20, color: '#3498db' },
-            { x: 500, y: canvas.height - 200, width: 100, height: 20, color: '#3498db' },
-            { x: 200, y: canvas.height - 240, width: 100, height: 20, color: '#3498db' },
-            { x: 400, y: canvas.height - 280, width: 100, height: 20, color: '#3498db' },
-            // Moving platforms
-            { x: 600, y: canvas.height - 180, width: 80, height: 15, color: '#9b59b6', moving: true, direction: 1, speed: 1, minX: 550, maxX: 700 }
-        );*/
-    }
-    createPlatforms();
-
-    // Robots array
-    const robots = [];
-
-    // Blue robots array (friendly)
-    const blueRobots = [];
-
-    // Boss object
-    let boss = null;
-
-    // Collectibles arrays
-    const coins = [];
-    const dataFragments = [];
-
-    // Power-ups array
-    const powerUps = [];
-
-    // Projectiles array
-    const projectiles = [];
-
-    // Active powers
-    const activePowers = {
-        shield: false,
-        zk: false,
-        speed: false
-    };
-
-    // Ability cooldowns
-    const abilityCooldowns = {
-        blast: 0,
-        heal: 0,
-        chain: 0
-    };
-
-    // Basic attack cooldown
-    let basicAttackCooldown = 0;
-
-    // Keyboard control
-    const keys = {};
-
-    // Update UI display
-    function updateUI() {
-        document.getElementById('score').textContent = gameState.score;
-        document.getElementById('lives').textContent = gameState.lives;
-        document.getElementById('level').textContent = gameState.level;
-        document.getElementById('coins').textContent = gameState.coins;
-
-        // Update power-up display
-        document.getElementById('shield-power').classList.toggle('active', activePowers.shield);
-        document.getElementById('zk-power').classList.toggle('active', activePowers.zk);
-        document.getElementById('speed-power').classList.toggle('active', activePowers.speed);
-
-        // Update ability cooldowns
-        updateAbilityCooldown('blast', abilityCooldowns.blast);
-        updateAbilityCooldown('heal', abilityCooldowns.heal);
-        updateAbilityCooldown('chain', abilityCooldowns.chain);
-    }
-
-    // Update ability cooldown display
-    function updateAbilityCooldown(ability, cooldown) {
-        const element = document.getElementById(`${ability}-ability`);
-        const cooldownBar = element.querySelector('.ability-cooldown');
-        let maxCooldown = 120;
-
-        if (ability === 'heal') maxCooldown = 180;
-        if (ability === 'chain') maxCooldown = 240;
-
-        if (cooldown > 0) {
-            element.classList.add('disabled');
-            cooldownBar.style.width = `${(cooldown / maxCooldown) * 100}%`;
-        } else {
-            element.classList.remove('disabled');
-            cooldownBar.style.width = '0%';
-        }
-    }
-
-    // Game loop
-    function gameLoop() {
-        if (!gameState.running || gameState.gameOver) return;
-
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Apply gravity
-        player.velY += gameState.gravity;
-
-        // Update player position
-        player.x += player.velX;
-        player.y += player.velY;
-
-        // Ensure player doesn't fall below canvas
-        if (player.y > canvas.height - player.height) {
-            player.y = canvas.height - player.height;
-            player.jumping = false;
-            player.grounded = true;
-        }
-
-        // Ensure player doesn't move outside left/right boundaries
-        if (player.x < 0) {
-            player.x = 0;
-        } else if (player.x > canvas.width - player.width) {
-            player.x = canvas.width - player.width;
-        }
-
-        // Update moving platforms
-        updateMovingPlatforms();
-
-        // Platform collision detection
-        player.grounded = false;
-        for (const platform of platforms) {
-            if (
-                player.x < platform.x + platform.width &&
-                player.x + player.width > platform.x &&
-                player.y < platform.y + platform.height &&
-                player.y + player.height > platform.y
-            ) {
-                // Collision from above
-                if (player.y + player.height < platform.y + platform.height && player.velY > 0) {
-                    player.y = platform.y - player.height;
-                    player.velY = 0;
-                    player.jumping = false;
-                    player.grounded = true;
-                }
-            }
-            if (platform.bounce &&
-                player.x < platform.x + platform.width &&
-                player.x + player.width > platform.x &&
-                player.y < platform.y + platform.height &&
-                player.y + player.height > platform.y &&
-                player.velY > 0) {
-                player.velY = -platform.bouncePower;
-            }
-
-            // Draw platform
-            ctx.fillStyle = platform.color;
-            ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
-        }
-
-        // Update and draw collectibles
-        updateCollectibles();
-
-        // Update and draw robots
-        updateRobots();
-
-        // Update and draw blue robots
-        updateBlueRobots();
-
-        // Update and draw boss
-        updateBoss();
-
-        // Update and draw power-ups
-        updatePowerUps();
-
-        // Update and draw projectiles
-        updateProjectiles();
-
-        // Draw player
-        if (playerImage.complete) {
-            // Flip image based on direction
-            ctx.save();
-            if (gameState.playerDirection === -1) {
-                ctx.scale(-1, 1);
-                ctx.drawImage(playerImage, -player.x - player.width, player.y, player.width, player.height);
-            } else {
-                ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
-            }
-            ctx.restore();
-        } else {
-            // Fallback to rectangle
-            ctx.fillStyle = activePowers.shield ? '#00cec9' : player.color;
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-
-            // Draw player eyes
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(player.x + 10, player.y + 10, 5, 5);
-            ctx.fillRect(player.x + 25, player.y + 10, 5, 5);
-        }
-
-        // Draw health bar
-        drawHealthBar();
-
-        // Draw direction indicator
-        ctx.fillStyle = '#fff';
-        ctx.font = '12px Arial';
-        ctx.fillText(`Direction: ${gameState.playerDirection === 1 ? 'Right' : 'Left'}`, 10, 20);
-        ctx.fillText('Press Q to switch', 10, 35);
-
-        // Update UI
-        updateUI();
-
-        // Update ability cooldowns
-        updateAbilityCooldowns();
-
-        // Check level completion condition
-        if (robots.length === 0 && blueRobots.length === 0 && (!gameState.bossActive || boss.health <= 0)) {
-            if (gameState.bossActive) {
-                gameState.score += 100; // Bonus for defeating boss
-                gameState.bossActive = false;
-                boss = null;
-            }
-
-            gameState.running = false;
-            showLevelUpScreen();
-        }
-
-        // Continue game loop
-        requestAnimationFrame(gameLoop);
-    }
-
-    // Update moving platforms
-    function updateMovingPlatforms() {
-        for (const platform of platforms) {
-            if (platform.moving) {
-                platform.x += platform.speed * platform.direction;
-
-                if (platform.x <= platform.minX || platform.x >= platform.maxX) {
-                    platform.direction *= -1;
-                }
-            }
-        }
-    }
-
-    // Update collectibles
-    function updateCollectibles() {
-        // Draw and check coin collection
-        for (let i = coins.length - 1; i >= 0; i--) {
-            const coin = coins[i];
-
-            // Draw coin
-            ctx.fillStyle = '#ffd700';
-            ctx.beginPath();
-            ctx.arc(coin.x + coin.width/2, coin.y + coin.height/2, coin.width/2, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.fillStyle = '#b8860b';
-            ctx.beginPath();
-            ctx.arc(coin.x + coin.width/2, coin.y + coin.height/2, coin.width/3, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Check collection
-            if (
-                player.x < coin.x + coin.width &&
-                player.x + player.width > coin.x &&
-                player.y < coin.y + coin.height &&
-                player.y + player.height > coin.y
-            ) {
-                coins.splice(i, 1);
-                gameState.coins += 1;
-                gameState.score += 5;
-            }
-        }
-
-        // Draw and check data fragment collection
-        for (let i = dataFragments.length - 1; i >= 0; i--) {
-            const fragment = dataFragments[i];
-
-            // Draw data fragment
-            ctx.fillStyle = '#00ff00';
-            ctx.beginPath();
-            ctx.moveTo(fragment.x + fragment.width/2, fragment.y);
-            ctx.lineTo(fragment.x + fragment.width, fragment.y + fragment.height/2);
-            ctx.lineTo(fragment.x + fragment.width/2, fragment.y + fragment.height);
-            ctx.lineTo(fragment.x, fragment.y + fragment.height/2);
-            ctx.closePath();
-            ctx.fill();
-
-            // Check collection
-            if (
-                player.x < fragment.x + fragment.width &&
-                player.x + player.width > fragment.x &&
-                player.y < fragment.y + fragment.height &&
-                player.y + player.height > fragment.y
-            ) {
-                dataFragments.splice(i, 1);
-                gameState.score += 15;
-
-                // Data fragments give coins
-                gameState.coins += 2;
-            }
-        }
-    }
-
-    // Update robots
-    function updateRobots() {
-        for (let i = 0; i < robots.length; i++) {
-            const robot = robots[i];
-// 在机器人更新循环中，确保血量检查逻辑正确
-            if (robot.health <= 0) {
-                robots.splice(i, 1);
-                gameState.score += 10;
-                spawnCollectible(robot.x, robot.y, 'coin');
-                i--; // 调整索引
-                continue; // 跳过当前循环的剩余部分
-            }
-            // Move robot based on type
-            if (robot.type === 'normal') {
-                robot.x += robot.speed * robot.direction;
-
-                // Change direction when robot hits boundary
-                if (robot.x <= 0 || robot.x >= canvas.width - robot.width) {
-                    robot.direction *= -1;
-                }
-            } else if (robot.type === 'jumper') {
-                // Jumper robots move more slowly but jump occasionally
-                robot.x += robot.speed * 0.7 * robot.direction;
-
-                // Change direction when robot hits boundary
-                if (robot.x <= 0 || robot.x >= canvas.width - robot.width) {
-                    robot.direction *= -1;
-                }
-
-                // Occasionally jump
-                if (Math.random() < 0.01 && robot.grounded) {
-                    robot.velY = -10;
-                    robot.grounded = false;
-                }
-
-                // Apply gravity to jumper robots
-                robot.velY += gameState.gravity;
-                robot.y += robot.velY;
-
-                // Ground collision for jumper robots
-                if (robot.y > canvas.height - robot.height) {
-                    robot.y = canvas.height - robot.height;
-                    robot.velY = 0;
-                    robot.grounded = true;
-                }
-            } else if (robot.type === 'shooter') {
-                // Shooter robots move slowly and shoot periodically
-                robot.x += robot.speed * 0.5 * robot.direction;
-
-                // Change direction when robot hits boundary
-                if (robot.x <= 0 || robot.x >= canvas.width - robot.width) {
-                    robot.direction *= -1;
-                }
-
-                // Shoot periodically
-                if (Math.random() < 0.01) {
-                    projectiles.push({
-                        x: robot.x + robot.width/2,
-                        y: robot.y + robot.height/2,
-                        radius: 5,
-                        speed: 5,
-                        direction: player.x > robot.x ? 1 : -1,
-                        color: '#ff5555',
-                        enemy: true
-                    });
-                }
-
-            }
-
-            // Detect if player jumps on robot
-            if (
-                player.x < robot.x + robot.width &&
-                player.x + player.width > robot.x &&
-                player.y < robot.y + robot.height &&
-                player.y + player.height > robot.y &&
-                player.velY > 0
-            ) {
-                // Jumped on robot from above
-                robot.health -= gameState.playerDamage;
-
-                if (robot.health <= 0) {
-                    robots.splice(i, 1);
-                    gameState.score += 10;
-                    // Spawn a coin when robot is defeated
-                    spawnCollectible(robot.x, robot.y, 'coin');
-                    i--;
-                }
-
-                player.velY = -10; // Bounce effect
-                continue;
-            }
-
-            // Detect if player touches robot (from side or below)
-            if (
-                player.x < robot.x + robot.width &&
-                player.x + player.width > robot.x &&
-                player.y < robot.y + robot.height &&
-                player.y + player.height > robot.y
-            ) {
-                if (!activePowers.shield) {
-                    player.health--;
-                    player.x = 50; // Reset player position
-                    player.y = canvas.height - 100;
-
-                    if (player.health <= 0) {
-                        gameState.lives--;
-                        player.health = player.maxHealth;
-
-                        if (gameState.lives <= 0) {
-                            gameOver();
-                        }
-                    }
-                }
-            }
-
-            // Draw robot using image
-            if (enemyRobotImage.complete) {
-                ctx.drawImage(
-                    enemyRobotImage,
-                    robot.x,
-                    robot.y,
-                    robot.width,
-                    robot.height
-                );
-            } else {
-                // Fallback to rectangle if image not loaded
-                ctx.fillStyle = robot.color;
-                ctx.fillRect(robot.x, robot.y, robot.width, robot.height);
-                ctx.fillStyle = '#000';
-                ctx.fillRect(robot.x + 5, robot.y + 5, 5, 5);
-                ctx.fillRect(robot.x + 20, robot.y + 5, 5, 5);
-            }
-
-            // Draw health bar for robots
-            if (robot.health < robot.maxHealth) {
-                ctx.fillStyle = '#ff0000';
-                ctx.fillRect(robot.x, robot.y - 10, robot.width, 5);
-
-                ctx.fillStyle = '#00ff00';
-                ctx.fillRect(robot.x, robot.y - 10, (robot.health / robot.maxHealth) * robot.width, 5);
-            }
-        }
-    }
-
-    // Update blue robots (friendly)
-    function updateBlueRobots() {
-        for (let i = 0; i < blueRobots.length; i++) {
-            const blueRobot = blueRobots[i];
-
-            // Move blue robot slowly
-            blueRobot.x += blueRobot.speed * blueRobot.direction;
-
-            // Change direction when blue robot hits boundary
-            if (blueRobot.x <= 0 || blueRobot.x >= canvas.width - blueRobot.width) {
-                blueRobot.direction *= -1;
-            }
-
-            // Detect if player collects blue robot
-            if (
-                player.x < blueRobot.x + blueRobot.width &&
-                player.x + player.width > blueRobot.x &&
-                player.y < blueRobot.y + blueRobot.height &&
-                player.y + player.height > blueRobot.y
-            ) {
-                blueRobots.splice(i, 1);
-                i--;
-
-                // Blue robot gives special bonus
-                gameState.score += 25;
-                gameState.coins += 5;
-
-                // Random power-up
-                const powerTypes = ['shield', 'zk', 'speed'];
-                const randomPower = powerTypes[Math.floor(Math.random() * powerTypes.length)];
-                activePowers[randomPower] = true;
-
-                // Power lasts for 10 seconds
-                setTimeout(() => {
-                    activePowers[randomPower] = false;
-                    updateUI();
-                }, 10000);
-
-                continue;
-            }
-
-            // Draw blue robot using image
-            if (blueRobotImage.complete) {
-                // Apply blue tint to the robot
-                /*ctx.save();
-                ctx.filter = 'hue-rotate(180deg) saturate(2)';*/
-                ctx.drawImage(
-                    blueRobotImage,
-                    blueRobot.x,
-                    blueRobot.y,
-                    blueRobot.width,
-                    blueRobot.height
-                );
-                ctx.restore();
-            } else {
-                // Fallback to rectangle if image not loaded
-                ctx.fillStyle = '#3498db';
-                ctx.fillRect(blueRobot.x, blueRobot.y, blueRobot.width, blueRobot.height);
-                ctx.fillStyle = '#fff';
-                ctx.fillRect(blueRobot.x + 5, blueRobot.y + 5, 5, 5);
-                ctx.fillRect(blueRobot.x + 20, blueRobot.y + 5, 5, 5);
-            }
-        }
-    }
-
-    // Update boss
-    function updateBoss() {
-        if (!gameState.bossActive || !boss) return;
-
-        // Move boss
-        boss.x += boss.speed * boss.direction;
-
-        // Change direction when boss hits boundary
-        if (boss.x <= 0 || boss.x >= canvas.width - boss.width) {
-            boss.direction *= -1;
-        }
-
-        // Boss attacks - less frequent for easier gameplay
-        if (Math.random() < 0.02) {
-            // Shoot projectiles
-            projectiles.push({
-                x: boss.x + boss.width/2,
-                y: boss.y + boss.height/2,
-                radius: 8,
-                speed: 4,
-                direction: player.x > boss.x ? 1 : -1,
-                color: '#ff5555',
-                enemy: true
-            });
-        }
-
-        if (Math.random() < 0.008) {
-            // Jump attack - less frequent
-            boss.velY = -12;
-        }
-
-        // Apply gravity to boss
-        boss.velY += gameState.gravity;
-        boss.y += boss.velY;
-
-        // Ground collision for boss
-        if (boss.y > canvas.height - boss.height) {
-            boss.y = canvas.height - boss.height;
-            boss.velY = 0;
-        }
-
-        // Detect if player jumps on boss
-        if (
-            player.x < boss.x + boss.width &&
-            player.x + player.width > boss.x &&
-            player.y < boss.y + boss.height &&
-            player.y + player.height > boss.y &&
-            player.velY > 0
-        ) {
-            // Jumped on boss from above
-            boss.health -= gameState.playerDamage;
-            player.velY = -12; // Bounce effect
-
-            if (boss.health <= 0) {
-                gameState.score += 100;
-                // Spawn multiple coins when boss is defeated
-                for (let i = 0; i < 5; i++) {
-                    spawnCollectible(boss.x + Math.random() * boss.width, boss.y + Math.random() * boss.height, 'coin');
-                }
-
-                // Also spawn data fragments
-                for (let i = 0; i < 3; i++) {
-                    spawnCollectible(boss.x + Math.random() * boss.width, boss.y + Math.random() * boss.height, 'fragment');
-                }
-            }
-        }
-
-        // Detect if player touches boss (from side or below)
-        if (
-            player.x < boss.x + boss.width &&
-            player.x + player.width > boss.x &&
-            player.y < boss.y + boss.height &&
-            player.y + player.height > boss.y
-        ) {
-            if (!activePowers.shield) {
-                player.health -= 1; // Reduced from 2 to 1 damage
-                player.x = 50;
-                player.y = canvas.height - 100;
-
-                if (player.health <= 0) {
-                    gameState.lives--;
-                    player.health = player.maxHealth;
-
-                    if (gameState.lives <= 0) {
-                        gameOver();
-                    }
-                }
-            }
-        }
-
-        // Draw boss
-        if (bossImage.complete) {
-            ctx.drawImage(bossImage, boss.x, boss.y, boss.width, boss.height);
-        } else {
-            ctx.fillStyle = boss.color;
-            ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
-        }
-
-        // Draw boss health bar
-        ctx.fillStyle = '#ff0000';
-        ctx.fillRect(canvas.width/2 - 100, 20, 200, 15);
-
-        ctx.fillStyle = '#00ff00';
-        ctx.fillRect(canvas.width/2 - 100, 20, (boss.health / boss.maxHealth) * 200, 15);
-
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '12px Arial';
-        ctx.fillText(`BOSS: ${boss.health}/${boss.maxHealth}`, canvas.width/2 - 30, 32);
-    }
-
-    // Update power-ups
-    function updatePowerUps() {
-        for (let i = 0; i < powerUps.length; i++) {
-            const powerUp = powerUps[i];
-
-            // Draw power-up
-            ctx.fillStyle = powerUp.color;
-            ctx.fillRect(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
-
-            // Draw different icons based on type
-            ctx.fillStyle = '#fff';
-            ctx.font = '14px Arial';
-            ctx.fillText(
-                powerUp.type === 'shield' ? 'S' : powerUp.type === 'zk' ? 'ZK' : 'F',
-                powerUp.x + 5,
-                powerUp.y + 15
-            );
-
-            // Detect if player collects power-up
-            if (
-                player.x < powerUp.x + powerUp.width &&
-                player.x + player.width > powerUp.x &&
-                player.y < powerUp.y + powerUp.height &&
-                player.y + player.height > powerUp.y
-            ) {
-                // Activate the corresponding power
-                activePowers[powerUp.type] = true;
-                powerUps.splice(i, 1);
-                i--;
-
-                // Power lasts for 10 seconds
-                setTimeout(() => {
-                    activePowers[powerUp.type] = false;
-                    updateUI();
-                }, 10000);
-            }
-        }
-
-        // Apply speed power-up
-        player.speed = activePowers.speed ? 8 : 5;
-    }
-
-    // Update projectiles
-    function updateProjectiles() {
-        for (let i = projectiles.length - 1; i >= 0; i--) {
-            const projectile = projectiles[i];
-
-            // Move projectile
-            projectile.x += projectile.speed * projectile.direction;
-
-            // Remove projectiles that go off screen
-            if (projectile.x < 0 || projectile.x > canvas.width) {
-                projectiles.splice(i, 1);
-                continue;
-            }
-
-            // Draw projectile
-            ctx.fillStyle = projectile.color;
-            ctx.beginPath();
-            ctx.arc(projectile.x, projectile.y, projectile.radius, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Enemy projectiles hurt player
-            if (projectile.enemy) {
-                if (
-                    player.x < projectile.x + projectile.radius &&
-                    player.x + player.width > projectile.x - projectile.radius &&
-                    player.y < projectile.y + projectile.radius &&
-                    player.y + player.height > projectile.y - projectile.radius
-                ) {
-                    if (!activePowers.shield) {
-                        player.health--;
-
-                        if (player.health <= 0) {
-                            gameState.lives--;
-                            player.health = player.maxHealth;
-
-                            if (gameState.lives <= 0) {
-                                gameOver();
-                            }
-                        }
-                    }
-
-                    projectiles.splice(i, 1);
-                }
-            }
-            // Player projectiles damage enemies
-            else {
-                let hit = false;
-
-                // Check against robots
-                for (let j = 0; j < robots.length; j++) {
-                    const robot = robots[j];
-
-                    if (
-                        robot.x < projectile.x + projectile.radius &&
-                        robot.x + robot.width > projectile.x - projectile.radius &&
-                        robot.y < projectile.y + projectile.radius &&
-                        robot.y + robot.height > projectile.y - projectile.radius
-                    ) {
-                        robot.health -= 2;
-
-                        if (robot.health <= 0) {
-                            robots.splice(j, 1);
-                            gameState.score += 10;
-                            spawnCollectible(robot.x, robot.y, 'coin');
-                        }
-
-                        hit = true;
-                        break;
-                    }
-                }
-
-                // Check against boss
-                if (!hit && gameState.bossActive && boss) {
-                    if (
-                        boss.x < projectile.x + projectile.radius &&
-                        boss.x + boss.width > projectile.x - projectile.radius &&
-                        boss.y < projectile.y + projectile.radius &&
-                        boss.y + boss.height > projectile.y - projectile.radius
-                    ) {
-                        boss.health -= 2;
-                        hit = true;
-                    }
-                }
-
-                if (hit) {
-                    projectiles.splice(i, 1);
-                }
-            }
-        }
-    }
-
-    // Draw player health bar
-    function drawHealthBar() {
-        const barWidth = 40;
-        const barHeight = 5;
-        const x = player.x;
-        const y = player.y - 10;
-
-        ctx.fillStyle = '#ff0000';
-        ctx.fillRect(x, y, barWidth, barHeight);
-
-        ctx.fillStyle = '#00ff00';
-        ctx.fillRect(x, y, (player.health / player.maxHealth) * barWidth, barHeight);
-    }
-
-    // Update ability cooldowns
-    function updateAbilityCooldowns() {
-        if (abilityCooldowns.blast > 0) abilityCooldowns.blast--;
-        if (abilityCooldowns.heal > 0) abilityCooldowns.heal--;
-        if (abilityCooldowns.chain > 0) abilityCooldowns.chain--;
-        if (basicAttackCooldown > 0) basicAttackCooldown--;
-    }
-
-    // Spawn collectible
-    function spawnCollectible(x, y, type) {
-        if (type === 'coin') {
-            coins.push({
-                x: x,
-                y: y,
-                width: 15,
-                height: 15
-            });
-        } else if (type === 'fragment') {
-            dataFragments.push({
-                x: x,
-                y: y,
-                width: 15,
-                height: 15
-            });
-        }
-    }
-
-    // Use basic attack
-    function useBasicAttack() {
-        if (basicAttackCooldown > 0) return;
-
-        // Create a simple projectile
-        projectiles.push({
-            x: player.x + player.width/2,
-            y: player.y + player.height/2,
-            radius: 4,
-            speed: 7,
-            direction: gameState.playerDirection,
-            color: '#6c5ce7',
-            enemy: false
-        });
-
-        basicAttackCooldown = 15; // Short cooldown
-    }
-
-    // Use data blast ability
-    function useDataBlast() {
-        if (abilityCooldowns.blast > 0) return;
-
-        // Create multiple projectiles in a spread pattern
-        for (let i = -1; i <= 1; i++) {
-            projectiles.push({
-                x: player.x + player.width/2,
-                y: player.y + player.height/2,
-                radius: 6,
-                speed: 7,
-                direction: gameState.playerDirection + i * 0.3,
-                color: '#6c5ce7',
-                enemy: false
-            });
-        }
-
-        abilityCooldowns.blast = 120; // 2 second cooldown at 60fps
-    }
-
-    // Use heal ability
-    function useHeal() {
-        if (abilityCooldowns.heal > 0) return;
-
-        player.health = Math.min(player.health + 1, player.maxHealth);
-        abilityCooldowns.heal = 180; // 3 second cooldown at 60fps
-    }
-
-    // Use chain attack ability
-    function useChainAttack() {
-        if (abilityCooldowns.chain > 0) return;
-
-        if (robots.length > 0) {
-            // Find closest robot
-            let closestRobot = null;
-            let minDistance = Infinity;
-
-            for (const robot of robots) {
-                const dx = robot.x - player.x;
-                const dy = robot.y - player.y;
-                const distance = Math.sqrt(dx*dx + dy*dy);
-
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestRobot = robot;
-                }
-            }
-
-            if (closestRobot) {
-                // Create a chain lightning effect
-                ctx.fillStyle = '#00ffff';
-                ctx.beginPath();
-                ctx.moveTo(player.x + player.width/2, player.y + player.height/2);
-                ctx.lineTo(closestRobot.x + closestRobot.width/2, closestRobot.y + closestRobot.height/2);
-                ctx.stroke();
-
-                // Damage the robot
-                closestRobot.health -= 3;
-
-                if (closestRobot.health <= 0) {
-                    const index = robots.indexOf(closestRobot);
-                    if (index > -1) {
-                        robots.splice(index, 1);
-                        gameState.score += 10;
-                        spawnCollectible(closestRobot.x, closestRobot.y, 'coin');
-                    }
-                }
-            }
-        }
-
-        abilityCooldowns.chain = 240; // 4 second cooldown
-    }
-
-    // Switch attack direction
-    function switchDirection() {
-        gameState.playerDirection *= -1;
-    }
-    //创建机器人数组
-    const robotTypes = [
-        { type: 'normal', health: 1, speed: 1, color: '#ff7675' },
-        { type: 'jumper', health: 1, speed: 0.7, color: '#fd79a8' },
-        { type: 'shooter', health: 2, speed: 0.5, color: '#e17055' },
-        { type: 'tank', health: 3, speed: 0.3, color: '#d63031' }, // 新类型：坦克
-        { type: 'speedy', health: 1, speed: 1.5, color: '#00b894' } // 新类型：快速
-    ];
-    // Next level
-    function nextLevel() {
-
-        gameState.level++;
-
-        // Add more robots with increased speed and variety
-        const robotCount = Math.min(gameState.level + 2, 8); // Cap at 8 robots
-
-        for (let i = 0; i < robotCount; i++) {
-            const selectedType = robotTypes[Math.floor(Math.random() * robotTypes.length)];
-
-            let type = 'normal';
-            if (gameState.level >= 2 && Math.random() < 0.3) type = 'jumper';
-            if (gameState.level >= 4 && Math.random() < 0.2) type = 'shooter';
-
-            const robot = {
-               /* x: Math.random() * (canvas.width - 60) + 50,
-                y: Math.random() * (canvas.height - 200) + 50,
-                width: 50,
-                height: 50,
-                speed: selectedType.speed + Math.random() * gameState.level * 0.3,
-                direction: Math.random() > 0.5 ? 1 : -1,
-                color: selectedType.color,
-                type: selectedType.type,
-                health: selectedType.health,
-                maxHealth: selectedType.health,
-                grounded: false,
-                velY: 0*/
-               x: Math.random() * (canvas.width - 60) + 50,
-                y: Math.random() * (canvas.height - 200) + 50,
-                width: 50,
-                height: 50,
-                speed: 1 + Math.random() * gameState.level * 0.3, // Reduced speed scaling
-                direction: Math.random() > 0.5 ? 1 : -1,
-                color: '#ff7675',
-                type: type,
-                health: type === 'shooter' ? 2 : 1,
-                maxHealth: type === 'shooter' ? 2 : 1,
-                grounded: false,
-                velY: 0
-            };
-
-            robots.push(robot);
-        }
-
-        // Add blue robots (friendly)
-        if (Math.random() < 0.5) {
-            const blueRobotCount = Math.floor(Math.random() * 3) + 1;
-            for (let i = 0; i < blueRobotCount; i++) {
-                blueRobots.push({
-                    x: Math.random() * (canvas.width - 60) + 50,
-                    y: Math.random() * (canvas.height - 200) + 50,
-                    width: 50,
-                    height: 50,
-                    speed: 1,
-                    direction: Math.random() > 0.5 ? 1 : -1,
-                    color: '#3498db'
-                });
-            }
-        }
-
-        // Add boss every 5 levels (instead of 3)
-        if (gameState.level % 5 === 0) {
-            gameState.bossActive = true;
-            boss = {
-                x: canvas.width / 2 - 40,
-                y: canvas.height - 200,
-                width: 80,
-                height: 80,
-                speed: 1.5, // Reduced speed
-                direction: 1,
-                color: '#ff5555',
-                health: 5 + 3 * Math.floor(gameState.level / 5), // Reduced health scaling
-                maxHealth: 5 + 3 * Math.floor(gameState.level / 5),
-                velY: 0
-            };
-        }
-
-        // Add power-ups (more frequently)
-        if (Math.random() < 0.8) {
-            powerUps.push({
-                x: Math.random() * (canvas.width - 100) + 50,
-                y: Math.random() * (canvas.height - 200) + 50,
-                width: 20,
-                height: 20,
-                type: ['shield', 'zk', 'speed'][Math.floor(Math.random() * 3)],
-                color: '#00cec9'
-            });
-        }
-
-        // Add some coins (more coins)
-        for (let i = 0; i < 8; i++) {
-            spawnCollectible(
-                Math.random() * (canvas.width - 100) + 50,
-                Math.random() * (canvas.height - 200) + 50,
-                'coin'
-            );
-        }
-
-        // Add data fragments more frequently
-        if (Math.random() < 0.7) {
-            for (let i = 0; i < 3; i++) {
-                spawnCollectible(
-                    Math.random() * (canvas.width - 100) + 50,
-                    Math.random() * (canvas.height - 200) + 50,
-                    'fragment'
-                );
-            }
-        }
-    }
-
-    // Show level up screen
-    function showLevelUpScreen() {
-        document.getElementById('level-up').style.display = 'block';
-    }
-
-    // Apply upgrade
-    function applyUpgrade(upgrade) {
-        if (upgrade === 'health') {
-            player.maxHealth++;
-            player.health = player.maxHealth;
-        } else if (upgrade === 'speed') {
-            player.speed += 0.5;
-        } else if (upgrade === 'damage') {
-            gameState.playerDamage += 0.2;
-        } else if (upgrade === 'jump') {
-            gameState.jumpPower += 1.5;
-        }
-
-        document.getElementById('level-up').style.display = 'none';
-        gameState.running = true;
-        nextLevel();
-        gameLoop();
-    }
-
-    // Game over
-    function gameOver() {
-        gameState.gameOver = true;
-        gameState.running = false;
-        document.getElementById('final-score').textContent = gameState.score;
-        document.getElementById('final-coins').textContent = gameState.coins;
-        document.getElementById('game-over').style.display = 'flex';
-    }
-
-    // Initialize game
-    function initGame() {
-        // Reset game state
-        gameState.running = true;
-        gameState.score = 0;
-        gameState.coins = 0;
-        gameState.lives = 3;
-        gameState.level = 1;
-        gameState.gameOver = false;
-        gameState.bossActive = false;
-        gameState.playerDamage = 1;
-        gameState.jumpPower = 12;
-        gameState.playerDirection = 1;
-
-        // Reset player
-        player.x = 50;
-        player.y = canvas.height - 100;
-        player.velX = 0;
-        player.velY = 0;
-        player.speed = 5;
-        player.maxHealth = 3;
-        player.health = 3;
-
-        // Clear arrays
-        robots.length = 0;
-        blueRobots.length = 0;
-        powerUps.length = 0;
-        coins.length = 0;
-        dataFragments.length = 0;
-        projectiles.length = 0;
-
-        // Reset abilities
-        abilityCooldowns.blast = 0;
-        abilityCooldowns.heal = 0;
-        abilityCooldowns.chain = 0;
-        basicAttackCooldown = 0;
-
-        // Reset powers
-        activePowers.shield = false;
-        activePowers.zk = false;
-        activePowers.speed = false;
-
-        // Recreate platforms
-        createPlatforms();
-
-        // Add initial robots and power-ups
-        nextLevel();
-
-        // Hide game over and level up screens
-        document.getElementById('game-over').style.display = 'none';
-        document.getElementById('level-up').style.display = 'none';
-
-        // Update UI
-        updateUI();
-
-        // Start game loop
-        gameLoop();
-    }
-
-    // Event listeners
-    document.addEventListener('keydown', function(e) {
-        keys[e.key] = true;
-
-        // Jump
-        if ((e.key === 'w' || e.key === 'W' || e.key === ' ' || e.key === 'ArrowUp') && player.grounded) {
-            player.velY = -gameState.jumpPower;
-            player.jumping = true;
-            player.grounded = false;
-        }
-
-        // Ability keys
-        if (e.key === '1') {
-            useDataBlast();
-        }
-
-        if (e.key === '2') {
-            useHeal();
-        }
-
-        if (e.key === '3') {
-            useChainAttack();
-        }
-
-        // Basic attack
-        if (e.key === 'f' || e.key === 'F') {
-            useBasicAttack();
-        }
-
-        // Switch direction
-        if (e.key === 'q' || e.key === 'Q') {
-            switchDirection();
-        }
-    });
-
-    document.addEventListener('keyup', function(e) {
-        keys[e.key] = false;
-    });
-
-    // Button events
-    document.getElementById('start-btn').addEventListener('click', function() {
-        if (!gameState.running) {
-            initGame();
-        }
-    });
-
-    document.getElementById('pause-btn').addEventListener('click', function() {
-        gameState.running = !gameState.running;
-        if (gameState.running) {
-            gameLoop();
-        }
-    });
-
-    document.getElementById('restart-btn').addEventListener('click', initGame);
-
-    // Ability click events
-    document.getElementById('blast-ability').addEventListener('click', useDataBlast);
-    document.getElementById('heal-ability').addEventListener('click', useHeal);
-    document.getElementById('chain-ability').addEventListener('click', useChainAttack);
-
-    // Upgrade option events
-    document.querySelectorAll('.upgrade-option').forEach(option => {
-        option.addEventListener('click', function() {
-            if (gameState.running) return;
-            applyUpgrade(this.dataset.upgrade);
-        });
-    });
-
-    // Handle player movement
-    function handlePlayerMovement() {
-        player.velX = 0;
-
-        if (keys['a'] || keys['A'] || keys['ArrowLeft']) {
-            player.velX = -player.speed;
-            gameState.playerDirection = -1;
-        }
-
-        if (keys['d'] || keys['D'] || keys['ArrowRight']) {
-            player.velX = player.speed;
-            gameState.playerDirection = 1;
-        }
-    }
-
-    // Movement handling loop
-    setInterval(handlePlayerMovement, 10);
-
-    // Initialize canvas dimensions on resize
-    window.addEventListener('resize', function() {
-        setCanvasSize();
-        createPlatforms();
-    });
-
-    // Initial render
-    ctx.fillStyle = '#0d1128';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#fff';
-    ctx.font = '20px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Click "Start Game" to begin', canvas.width/2, canvas.height/2);
-</script>
+<!-- 音频元素 -->
+    <audio id="bgMusic" loop>
+        <source src="./music/background.wav" type="audio/wav">
+    </audio>
+    <audio id="coinSound">
+        <source src="./music/coin.wav" type="audio/wav">
+    </audio>
+    <audio id="jumpSound">
+        <source src="./music/jump.wav" type="audio/wav">
+    </audio>
+    <audio id="attackSound">
+        <source src="./music/attack.wav" type="audio/wav">
+    </audio>
+    <audio id="damageSound">
+        <source src="./music/damage.wav" type="audio/wav">
+     </audio>
+    <audio id="levelUpSound">
+        <source src="./music/levelup.wav" type="audio/wav">
+     </audio>
+
+    <!-- 音乐控制按钮 -->
+    <div class="music-controls">
+        <button id="musicToggle" class="control-btn">
+            <i class="fas fa-volume-up"></i>
+        </button>
+        <input type="range" id="musicVolume" min="0" max="1" step="0.1" value="0.5" class="volume-slider">
+    </div>
+
+    <!-- 引入游戏引擎 -->
+    <script src="main.js"></script>
 </body>
 </html>
